@@ -14,11 +14,16 @@ import { TermsPage, PrivacyPage, RefundPage } from './pages/PolicyPages';
 import { Button } from './ui/Button';
 import { AdBanner } from './ui/AdBanner';
 import { loadPdf, renderPageToImage, applyFilters, generateGridPdf } from '../lib/pdfUtils';
-import { Loader2, ArrowLeft, FileText, X, Plus, ChevronRight, Lightbulb, CheckCircle2, Hammer } from 'lucide-react';
+import { loadImageToCanvas, applyImageFilters, generatePdfFromImages } from '../lib/imageUtils';
+import { removeTeacher } from '../lib/teacherRemoval';
+import { extractPptxSlides } from '../lib/pptxUtils';
+import { Loader2, ArrowLeft, FileText, X, Plus, ChevronRight, Lightbulb, CheckCircle2, Hammer, Image, UserX } from 'lucide-react';
 
 export function Processor({ currentPage, onNavigate }) {
     const [step, setStep] = useState('home');
+    const [uploadMode, setUploadMode] = useState('pdf'); // 'pdf', 'images', or 'pptx'
     const [files, setFiles] = useState([]); // Multi-file support
+    const [images, setImages] = useState([]); // Image files support
     const [pages, setPages] = useState([]);
     const [selectedPages, setSelectedPages] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -26,6 +31,8 @@ export function Processor({ currentPage, onNavigate }) {
     const [status, setStatus] = useState('');
     const [processedPdfBlob, setProcessedPdfBlob] = useState(null);
     const fileInputRef = useRef(null);
+    const imageInputRef = useRef(null);
+    const [draggedImageIndex, setDraggedImageIndex] = useState(null);
 
     const [settings, setSettings] = useState({
         invert: true,
@@ -33,6 +40,7 @@ export function Processor({ currentPage, onNavigate }) {
         greyscale: false,
         blackAndWhite: false,
         removeLogo: false,
+        removeTeacher: false, // AI-powered teacher removal for images
         quality: 'medium',
         documentSize: 'A4',
         orientation: 'portrait',
@@ -97,6 +105,86 @@ export function Processor({ currentPage, onNavigate }) {
         }
     };
 
+    // Handle image uploads
+    const handleImagesSelect = async (imageFiles) => {
+        setLoading(true);
+        setStatus('Loading images...');
+        setUploadMode('images');
+
+        try {
+            const loadedImages = [];
+            for (let i = 0; i < imageFiles.length; i++) {
+                setStatus(`Loading image ${i + 1} of ${imageFiles.length}...`);
+                const imgData = await loadImageToCanvas(imageFiles[i]);
+                loadedImages.push({
+                    id: i + 1,
+                    ...imgData,
+                    selected: true,
+                });
+            }
+            setImages(loadedImages);
+            setPages(loadedImages.map((img, idx) => ({
+                id: idx + 1,
+                pageNum: idx + 1,
+                thumbnail: img.dataUrl,
+                isImage: true,
+            })));
+            setSelectedPages(loadedImages.map(img => img.id));
+            setStep('upload');
+        } catch (err) {
+            console.error(err);
+            alert('Error loading images. Please try again.');
+        } finally {
+            setLoading(false);
+            setStatus('');
+        }
+    };
+
+    // Handle PPTX uploads - extract slides and treat as images
+    const handlePptxSelect = async (pptxFile) => {
+        setLoading(true);
+        setStatus('Extracting PowerPoint slides...');
+        setUploadMode('pptx');
+
+        try {
+            const extractedSlides = await extractPptxSlides(pptxFile, (progressMsg) => {
+                setStatus(progressMsg);
+            });
+
+            if (extractedSlides.length === 0) {
+                throw new Error('No slides could be extracted from the PowerPoint file.');
+            }
+
+            // extractPptxSlides returns slide objects with canvas, dataUrl, width, height properties
+            const loadedImages = extractedSlides.map((slide, i) => ({
+                id: i + 1,
+                canvas: slide.canvas,
+                dataUrl: slide.dataUrl,
+                width: slide.width,
+                height: slide.height,
+                file: { name: pptxFile.name },
+                selected: true,
+            }));
+
+            setImages(loadedImages);
+            setPages(loadedImages.map((img, idx) => ({
+                id: idx + 1,
+                pageNum: idx + 1,
+                thumbnail: img.dataUrl,
+                isImage: true,
+                isPptx: true,
+            })));
+            setSelectedPages(loadedImages.map(img => img.id));
+            setStep('upload');
+        } catch (err) {
+            console.error('PPTX extraction error:', err);
+            alert('Error extracting PowerPoint slides: ' + err.message + '\n\nNote: Only .pptx files (PowerPoint 2007+) are supported.');
+        } finally {
+            setLoading(false);
+            setStatus('');
+        }
+    };
+
     const handleAddMorePdfs = () => {
         fileInputRef.current?.click();
     };
@@ -105,6 +193,47 @@ export function Processor({ currentPage, onNavigate }) {
         const file = e.target.files?.[0];
         if (file) {
             handleFileSelect(file);
+            e.target.value = ''; // Reset input
+        }
+    };
+
+    const handleAddMoreImages = () => {
+        imageInputRef.current?.click();
+    };
+
+    const handleImageInputChange = async (e) => {
+        const newFiles = Array.from(e.target.files || []);
+        if (newFiles.length === 0) return;
+
+        setLoading(true);
+        setStatus('Loading additional images...');
+
+        try {
+            const loadedImages = [];
+            for (let i = 0; i < newFiles.length; i++) {
+                setStatus(`Loading image ${i + 1} of ${newFiles.length}...`);
+                const imgData = await loadImageToCanvas(newFiles[i]);
+                loadedImages.push({
+                    id: images.length + i + 1,
+                    ...imgData,
+                    selected: true,
+                });
+            }
+            const allImages = [...images, ...loadedImages];
+            setImages(allImages);
+            setPages(allImages.map((img, idx) => ({
+                id: idx + 1,
+                pageNum: idx + 1,
+                thumbnail: img.dataUrl,
+                isImage: true,
+            })));
+            setSelectedPages(allImages.map((_, idx) => idx + 1));
+        } catch (err) {
+            console.error(err);
+            alert('Error loading images.');
+        } finally {
+            setLoading(false);
+            setStatus('');
             e.target.value = ''; // Reset input
         }
     };
@@ -125,7 +254,105 @@ export function Processor({ currentPage, onNavigate }) {
         setPages(pages.map(p => p.id === editedPage.id ? editedPage : p));
     };
 
+    // Image drag and drop handlers for reordering
+    const handleImageDragStart = (e, index) => {
+        setDraggedImageIndex(index);
+        e.dataTransfer.effectAllowed = 'move';
+        // Add a slight delay to allow the drag image to be created
+        setTimeout(() => {
+            e.target.style.opacity = '0.5';
+        }, 0);
+    };
+
+    const handleImageDragEnd = (e) => {
+        e.target.style.opacity = '1';
+        setDraggedImageIndex(null);
+    };
+
+    const handleImageDragOver = (e, index) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+
+    const handleImageDrop = (e, dropIndex) => {
+        e.preventDefault();
+        if (draggedImageIndex === null || draggedImageIndex === dropIndex) return;
+
+        // Reorder images
+        const newImages = [...images];
+        const draggedImage = newImages[draggedImageIndex];
+        newImages.splice(draggedImageIndex, 1);
+        newImages.splice(dropIndex, 0, draggedImage);
+
+        // Update images with new order and IDs
+        const reorderedImages = newImages.map((img, idx) => ({
+            ...img,
+            id: idx + 1,
+        }));
+
+        setImages(reorderedImages);
+        setPages(reorderedImages.map((img, idx) => ({
+            id: idx + 1,
+            pageNum: idx + 1,
+            thumbnail: img.dataUrl,
+            isImage: true,
+        })));
+        setSelectedPages(reorderedImages.map((_, idx) => idx + 1));
+        setDraggedImageIndex(null);
+    };
+
     const handleProcess = async () => {
+        // Handle image mode differently
+        if (uploadMode === 'images' && images.length > 0) {
+            setProcessing(true);
+            setStep('processing');
+            try {
+                // Apply filters to selected images
+                const processedImages = [];
+                for (let i = 0; i < images.length; i++) {
+                    setStatus(`Processing image ${i + 1}/${images.length}...`);
+                    const img = images[i];
+                    // Create a copy of the canvas
+                    let canvas = document.createElement('canvas');
+                    canvas.width = img.canvas.width;
+                    canvas.height = img.canvas.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img.canvas, 0, 0);
+
+                    // Remove teacher if enabled (AI-powered)
+                    if (settings.removeTeacher) {
+                        setStatus(`Removing teacher from image ${i + 1}/${images.length}...`);
+                        try {
+                            canvas = await removeTeacher(canvas, (msg) => setStatus(`Image ${i + 1}: ${msg}`));
+                        } catch (err) {
+                            console.warn('Teacher removal failed for image', i + 1, err);
+                            // Continue with original canvas if removal fails
+                        }
+                    }
+
+                    // Apply other filters
+                    applyImageFilters(canvas, settings);
+                    processedImages.push({
+                        canvas,
+                        dataUrl: canvas.toDataURL('image/png'),
+                    });
+                }
+                setStatus('Generating PDF...');
+                const blob = await generatePdfFromImages(processedImages, settings);
+                setProcessedPdfBlob(blob);
+                setStep('success');
+            } catch (err) {
+                console.error(err);
+                alert('Processing Failed. Please try again.');
+                setStep('settings');
+            } finally {
+                setProcessing(false);
+                setStatus('');
+            }
+            return;
+        }
+
+        // PDF mode
         if (files.length === 0) return;
         setProcessing(true);
         setStep('processing');
@@ -200,9 +427,11 @@ export function Processor({ currentPage, onNavigate }) {
 
     const reset = () => {
         setFiles([]);
+        setImages([]);
         setPages([]);
         setSelectedPages([]);
         setProcessedPdfBlob(null);
+        setUploadMode('pdf');
         setStep('home');
         onNavigate('home');
     };
@@ -210,11 +439,41 @@ export function Processor({ currentPage, onNavigate }) {
     const goBack = () => {
         if (step === 'upload') { setStep('home'); onNavigate('home'); }
         else if (step === 'select') setStep('upload');
-        else if (step === 'settings') setStep('select');
+        else if (step === 'settings') {
+            setStep('select');
+        }
+        else if (step === 'success') {
+            // Go back to settings to adjust and reprocess
+            setStep('settings');
+            setProcessedPdfBlob(null); // Clear the old result
+        }
     };
 
     const getTotalSize = () => {
         return files.reduce((acc, f) => acc + f.size, 0);
+    };
+
+    // Step timeline navigation
+    const handleStepNavigate = (targetStep, stepId) => {
+        // Clear processed result when navigating back
+        if (step === 'success' && targetStep !== 'success') {
+            setProcessedPdfBlob(null);
+        }
+        setStep(targetStep);
+    };
+
+    const canNavigateToStep = (targetStep) => {
+        // Can always navigate to completed steps if we have content
+        const hasContent = files.length > 0 || images.length > 0;
+        if (!hasContent) return false;
+
+        // Map step names to their order
+        const stepOrder = { upload: 1, select: 2, settings: 4, success: 6 };
+        const currentOrder = stepOrder[step] || 0;
+        const targetOrder = stepOrder[targetStep] || 0;
+
+        // Can navigate to current or earlier steps
+        return targetOrder <= currentOrder;
     };
 
     // ===== STATIC PAGES =====
@@ -275,6 +534,14 @@ export function Processor({ currentPage, onNavigate }) {
                     onChange={handleFileInputChange}
                     className="hidden"
                 />
+                <input
+                    ref={imageInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    multiple
+                    onChange={handleImageInputChange}
+                    className="hidden"
+                />
 
                 <button
                     onClick={() => { setStep('home'); onNavigate('home'); }}
@@ -300,10 +567,14 @@ export function Processor({ currentPage, onNavigate }) {
                 {/* Ad Banner - After Pro Tip */}
                 <AdBanner type="horizontal" className="max-w-3xl" />
 
-                {/* Show upload zone if no files yet */}
-                {files.length === 0 && (
+                {/* Show upload zone if no files/images yet */}
+                {files.length === 0 && images.length === 0 && (
                     <>
-                        <UploadZone onFileSelect={handleFileSelect} />
+                        <UploadZone
+                            onFileSelect={handleFileSelect}
+                            onImagesSelect={handleImagesSelect}
+                            onPptxSelect={handlePptxSelect}
+                        />
                         {/* Ad Banner - After Upload Zone */}
                         <AdBanner type="responsive" className="max-w-2xl" />
                     </>
@@ -381,6 +652,97 @@ export function Processor({ currentPage, onNavigate }) {
                         </button>
                     </div>
                 )}
+
+                {/* Selected Images List */}
+                {images.length > 0 && !loading && (
+                    <div className="p-6 rounded-xl bg-slate-900/50 border border-emerald-500/20 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                                <Image className="w-5 h-5 text-emerald-400" />
+                                Uploaded Images ({images.length})
+                            </h3>
+                            <span className="text-xs text-slate-500">
+                                💡 Drag images to reorder
+                            </span>
+                        </div>
+
+                        {/* Image Grid Preview - Draggable */}
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 max-h-72 overflow-y-auto scrollbar-thin p-1">
+                            {images.map((img, index) => (
+                                <div
+                                    key={img.id || index}
+                                    draggable
+                                    onDragStart={(e) => handleImageDragStart(e, index)}
+                                    onDragEnd={handleImageDragEnd}
+                                    onDragOver={(e) => handleImageDragOver(e, index)}
+                                    onDrop={(e) => handleImageDrop(e, index)}
+                                    className={`
+                                        relative aspect-square rounded-lg overflow-hidden border-2 group cursor-grab active:cursor-grabbing transition-all duration-200
+                                        ${draggedImageIndex === index
+                                            ? 'border-emerald-500 scale-95 opacity-50'
+                                            : draggedImageIndex !== null
+                                                ? 'border-dashed border-slate-500 hover:border-emerald-400 hover:scale-105'
+                                                : 'border-slate-700 hover:border-emerald-500/50'}
+                                    `}
+                                >
+                                    <img
+                                        src={img.dataUrl}
+                                        alt={img.name}
+                                        className="w-full h-full object-cover pointer-events-none"
+                                    />
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            const newImages = images.filter((_, i) => i !== index);
+                                            setImages(newImages);
+                                            setPages(newImages.map((img, idx) => ({
+                                                id: idx + 1,
+                                                pageNum: idx + 1,
+                                                thumbnail: img.dataUrl,
+                                                isImage: true,
+                                            })));
+                                            setSelectedPages(newImages.map(img => img.id));
+                                        }}
+                                        className="absolute top-1 right-1 p-1 bg-red-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                    >
+                                        <X className="w-3 h-3 text-white" />
+                                    </button>
+                                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[10px] p-1 truncate flex items-center justify-between">
+                                        <span className="font-bold">{index + 1}</span>
+                                        <span className="opacity-60">⋮⋮</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Summary */}
+                        <div className="flex items-center justify-between pt-4 border-t border-white/5 text-sm">
+                            <span className="text-slate-400">
+                                Total: <span className="text-white">{images.length} images</span>
+                            </span>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                            <Button onClick={() => setStep('select')} className="px-8 gap-2 bg-gradient-to-r from-emerald-600 to-cyan-600">
+                                <CheckCircle2 className="w-4 h-4" />
+                                Review & Edit Pages
+                            </Button>
+                            <Button variant="secondary" onClick={reset}>
+                                Clear All
+                            </Button>
+                        </div>
+
+                        {/* Add More Images */}
+                        <button
+                            onClick={handleAddMoreImages}
+                            className="flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm mx-auto pt-2 transition-colors"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Add more images
+                        </button>
+                    </div>
+                )}
             </div>
         );
     }
@@ -389,7 +751,7 @@ export function Processor({ currentPage, onNavigate }) {
     if (step === 'select') {
         return (
             <div className="max-w-6xl mx-auto space-y-6">
-                <StepProgress currentStep={3} />
+                <StepProgress currentStep={3} onStepClick={handleStepNavigate} canNavigateToStep={canNavigateToStep} />
                 <PageSelector
                     pages={pages}
                     selectedPages={selectedPages}
@@ -406,7 +768,7 @@ export function Processor({ currentPage, onNavigate }) {
     if (step === 'settings' || step === 'processing') {
         return (
             <div className="space-y-6">
-                <StepProgress currentStep={step === 'processing' ? 5 : 4} />
+                <StepProgress currentStep={step === 'processing' ? 5 : 4} onStepClick={handleStepNavigate} canNavigateToStep={canNavigateToStep} />
 
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-white">Enhance & Format</h2>
@@ -445,14 +807,17 @@ export function Processor({ currentPage, onNavigate }) {
         return (
             <SuccessScreen
                 fileInfo={{
-                    name: files.length === 1 ? files[0]?.name?.replace('.pdf', '') : 'Combined',
+                    name: files.length === 1 ? files[0]?.name?.replace('.pdf', '') : (images.length > 0 ? 'Images' : 'Combined'),
                     originalSize: (getTotalSize() / 1024).toFixed(2),
                     finalSize: (processedPdfBlob?.size / (1024 * 1024)).toFixed(2),
-                    pageCount: Math.ceil(selectedPages.length / (settings.rows * settings.cols))
+                    pageCount: Math.ceil((images.length || selectedPages.length) / (settings.rows * settings.cols))
                 }}
                 onDownload={handleDownload}
                 onPreview={handlePreview}
                 onProcessAnother={reset}
+                onGoBack={goBack}
+                onStepClick={handleStepNavigate}
+                canNavigateToStep={canNavigateToStep}
             />
         );
     }

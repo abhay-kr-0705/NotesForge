@@ -1,13 +1,13 @@
 import React from 'react';
-import { CheckCircle, Download, Eye, RefreshCw, Heart, Shield, Lock, Gift, AlertTriangle, Sparkles } from 'lucide-react';
+import { CheckCircle, Download, Eye, RefreshCw, Heart, Shield, Lock, Gift, AlertTriangle, Sparkles, ArrowLeft, Settings } from 'lucide-react';
 import { Button } from './ui/Button';
 import { StepProgress } from './StepProgress';
 
-export function SuccessScreen({ fileInfo, onDownload, onPreview, onProcessAnother }) {
+export function SuccessScreen({ fileInfo, onDownload, onPreview, onProcessAnother, onGoBack, onStepClick, canNavigateToStep }) {
     return (
         <div className="max-w-2xl mx-auto space-y-6">
             {/* Step Progress */}
-            <StepProgress currentStep={6} />
+            <StepProgress currentStep={6} onStepClick={onStepClick} canNavigateToStep={canNavigateToStep} />
 
             {/* Success Card - Download First */}
             <div className="text-center space-y-5 p-6 rounded-2xl bg-slate-900/50 border border-white/5 backdrop-blur-sm">
@@ -70,12 +70,24 @@ export function SuccessScreen({ fileInfo, onDownload, onPreview, onProcessAnothe
                     </Button>
                 </div>
 
-                <button
-                    onClick={onProcessAnother}
-                    className="text-sm text-slate-400 hover:text-white transition-colors"
-                >
-                    ← Process Another
-                </button>
+                {/* Back & Process Another Buttons */}
+                <div className="flex items-center justify-center gap-4 pt-2 border-t border-white/5">
+                    <button
+                        onClick={onGoBack}
+                        className="flex items-center gap-1 text-sm text-slate-400 hover:text-violet-400 transition-colors"
+                    >
+                        <ArrowLeft className="w-4 h-4" />
+                        Back to Settings
+                    </button>
+                    <span className="text-slate-600">|</span>
+                    <button
+                        onClick={onProcessAnother}
+                        className="flex items-center gap-1 text-sm text-slate-400 hover:text-white transition-colors"
+                    >
+                        <RefreshCw className="w-4 h-4" />
+                        Process Another
+                    </button>
+                </div>
             </div>
 
             {/* Donation Card - Below, accessible by scrolling */}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Moon, Sun, Type, Droplets, Image, Gauge, FileText, Columns, Rows, Maximize, Hash, SeparatorHorizontal, CheckCircle, Eraser, Contrast, Palette, SlidersHorizontal } from 'lucide-react';
+import { Grid, Moon, Sun, Type, Droplets, Image, Gauge, FileText, Columns, Rows, Maximize, Hash, SeparatorHorizontal, CheckCircle, Eraser, Contrast, Palette, SlidersHorizontal, UserX } from 'lucide-react';
 import { cn } from '../lib/cn';
 import { Button } from './ui/Button';
 
@@ -88,6 +88,26 @@ export function EnhancedSettingsPanel({ settings, updateSettings, fileInfo, onBa
                             checked={settings.removeLogo}
                             onChange={(v) => updateSettings('removeLogo', v)}
                         />
+                    </div>
+
+                    {/* Remove Teacher (AI-Powered) */}
+                    <div className="space-y-3 pt-4 border-t border-white/5">
+                        <h4 className="text-sm text-slate-400 flex items-center gap-2">
+                            <UserX className="w-4 h-4" />
+                            AI Teacher Removal
+                            <span className="px-1.5 py-0.5 text-[10px] bg-emerald-500/20 text-emerald-400 rounded-full">NEW</span>
+                        </h4>
+                        <SettingToggle
+                            label="Remove Teacher/Person"
+                            description="Auto-detect and remove person from slides (for images only)"
+                            checked={settings.removeTeacher}
+                            onChange={(v) => updateSettings('removeTeacher', v)}
+                        />
+                        {settings.removeTeacher && (
+                            <p className="text-xs text-amber-400/80 bg-amber-500/10 rounded-lg p-2">
+                                ⚠️ AI model will be downloaded (~2MB) on first use. Processing may take longer.
+                            </p>
+                        )}
                     </div>
 
                     {/* Output Quality */}

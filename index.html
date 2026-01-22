@@ -49,10 +49,13 @@
   <!-- Theme Color & App Config -->
   <meta name="theme-color" content="#3B82F6" />
   <meta name="msapplication-TileColor" content="#3B82F6" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="NotesForge" />
   <meta name="application-name" content="NotesForge" />
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json" />
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://notesforge.app/" />
@@ -102,6 +105,17 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('NotesForge SW registered'))
+          .catch(err => console.log('SW registration failed:', err));
+      });
+    }
+  </script>
 </body>
 
 </html>
