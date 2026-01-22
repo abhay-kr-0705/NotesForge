@@ -1,0 +1,153 @@
+import React, { useState } from 'react';
+import { Check, Pencil, Trash2, RotateCcw } from 'lucide-react';
+import { Button } from './ui/Button';
+import { PageEditor } from './PageEditor';
+import { cn } from '../lib/cn';
+
+export function PageSelector({ pages, selectedPages, onSelectionChange, onPageEdit, onContinue, onBack }) {
+    const [hoveredPage, setHoveredPage] = useState(null);
+    const [editingPage, setEditingPage] = useState(null);
+
+    const togglePage = (pageId) => {
+        if (selectedPages.includes(pageId)) {
+            onSelectionChange(selectedPages.filter(id => id !== pageId));
+        } else {
+            onSelectionChange([...selectedPages, pageId].sort((a, b) => a - b));
+        }
+    };
+
+    const selectAll = () => {
+        onSelectionChange(pages.map(p => p.id));
+    };
+
+    const deselectAll = () => {
+        onSelectionChange([]);
+    };
+
+    const handleEditClick = (e, page) => {
+        e.stopPropagation();
+        setEditingPage(page);
+    };
+
+    const handleSaveEdit = (editedPage) => {
+        onPageEdit(editedPage);
+        setEditingPage(null);
+    };
+
+    return (
+        <>
+            <div className="space-y-6">
+                {/* Tip Banner */}
+                <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                    <span className="text-xl">💡</span>
+                    <div>
+                        <span className="text-amber-400 font-medium">Tip: </span>
+                        <span className="text-slate-300">Click the pencil icon to edit individual pages. Deselect pages to remove them from the final document.</span>
+                    </div>
+                </div>
+
+                {/* Selection Header */}
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="text-white font-semibold">{selectedPages.length} of {pages.length}</span>
+                        <span className="text-slate-400">pages selected</span>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button variant="secondary" size="sm" onClick={selectAll}>
+                            Select All
+                        </Button>
+                        <Button variant="secondary" size="sm" onClick={deselectAll}>
+                            Deselect All
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Page Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 max-h-[50vh] overflow-y-auto p-2 scrollbar-thin">
+                    {pages.map((page) => {
+                        const isSelected = selectedPages.includes(page.id);
+                        return (
+                            <div
+                                key={page.id}
+                                className={cn(
+                                    "relative group rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2",
+                                    isSelected
+                                        ? "border-violet-500 shadow-lg shadow-violet-500/20"
+                                        : "border-slate-700 opacity-50 hover:opacity-80"
+                                )}
+                                onClick={() => togglePage(page.id)}
+                                onMouseEnter={() => setHoveredPage(page.id)}
+                                onMouseLeave={() => setHoveredPage(null)}
+                            >
+                                {/* Thumbnail */}
+                                <img
+                                    src={page.thumbnail}
+                                    alt={`Page ${page.id}`}
+                                    className="w-full h-auto"
+                                />
+
+                                {/* Edit Icon */}
+                                <button
+                                    onClick={(e) => handleEditClick(e, page)}
+                                    className={cn(
+                                        "absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center transition-all",
+                                        "bg-violet-500 text-white opacity-0 group-hover:opacity-100 hover:bg-violet-400 hover:scale-110"
+                                    )}
+                                >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                </button>
+
+                                {/* Selection Indicator */}
+                                <div className={cn(
+                                    "absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all",
+                                    isSelected ? "bg-violet-500" : "bg-slate-800/80 border border-slate-600"
+                                )}>
+                                    {isSelected && <Check className="w-4 h-4 text-white" />}
+                                </div>
+
+                                {/* Page Number */}
+                                <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 rounded text-xs font-medium text-white">
+                                    {page.id}
+                                </div>
+
+                                {/* Edited Badge */}
+                                {page.edited && (
+                                    <div className="absolute bottom-2 left-2 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-medium border border-emerald-500/30">
+                                        Edited
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                    <button
+                        onClick={onBack}
+                        className="text-slate-400 hover:text-white transition-colors"
+                    >
+                        ← Back to Upload
+                    </button>
+                    <Button
+                        size="lg"
+                        onClick={onContinue}
+                        disabled={selectedPages.length === 0}
+                        className="px-8"
+                    >
+                        Continue with {selectedPages.length} Pages
+                    </Button>
+                </div>
+            </div>
+
+            {/* Page Editor Modal */}
+            {editingPage && (
+                <PageEditor
+                    page={editingPage}
+                    onSave={handleSaveEdit}
+                    onClose={() => setEditingPage(null)}
+                />
+            )}
+        </>
+    );
+}
