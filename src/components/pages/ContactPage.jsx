@@ -138,8 +138,8 @@ export function ContactPage({ onBack }) {
                                 type="button"
                                 onClick={() => setFormData({ ...formData, type: type.value })}
                                 className={`p-3 rounded-xl border text-center transition-all ${formData.type === type.value
-                                        ? 'bg-violet-500/20 border-violet-500 text-violet-400'
-                                        : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
+                                    ? 'bg-violet-500/20 border-violet-500 text-violet-400'
+                                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
                                     }`}
                             >
                                 <type.icon className="w-5 h-5 mx-auto mb-1" />
@@ -187,43 +187,7 @@ export function ContactPage({ onBack }) {
                 </p>
             </form>
 
-            {/* Alternative Contact */}
-            <div className="p-5 rounded-xl bg-violet-500/10 border border-violet-500/20">
-                <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-violet-400" />
-                    Direct Contact
-                </h3>
-                <p className="text-sm text-slate-400 mb-3">
-                    You can also reach out directly via email or social media:
-                </p>
-                <div className="flex flex-wrap gap-2">
-                    <a
-                        href="mailto:abhayk7481@gmail.com"
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:border-violet-500/30 hover:text-white transition-colors text-sm"
-                    >
-                        <Mail className="w-4 h-4" />
-                        abhayk7481@gmail.com
-                    </a>
-                    <a
-                        href="https://www.linkedin.com/in/abhay-kumar-81b2a8288/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:border-blue-500/30 hover:text-white transition-colors text-sm"
-                    >
-                        <Linkedin className="w-4 h-4" />
-                        LinkedIn
-                    </a>
-                    <a
-                        href="https://github.com/abhay-kr-0705"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:border-slate-500/30 hover:text-white transition-colors text-sm"
-                    >
-                        <Github className="w-4 h-4" />
-                        GitHub
-                    </a>
-                </div>
-            </div>
+
 
             {/* Response Time */}
             <div className="text-center p-4 rounded-xl bg-slate-900/30 border border-white/5">

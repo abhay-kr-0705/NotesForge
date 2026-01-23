@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Github, Linkedin, Mail } from 'lucide-react';
+import { Heart, Github, Linkedin, Mail, Shield, Zap, UserX } from 'lucide-react';
 
 export function Footer({ onNavigate }) {
     const currentYear = new Date().getFullYear();
@@ -14,95 +14,119 @@ export function Footer({ onNavigate }) {
         }, 100);
     };
 
-    const developerLinks = [
-        { icon: Linkedin, href: 'https://www.linkedin.com/in/abhay-kumar-81b2a8288/', label: 'LinkedIn' },
+    const socialLinks = [
         { icon: Github, href: 'https://github.com/abhay-kr-0705', label: 'GitHub' },
+        { icon: Linkedin, href: 'https://www.linkedin.com/in/abhay-kumar-81b2a8288/', label: 'LinkedIn' },
         { icon: Mail, href: 'mailto:abhayk7481@gmail.com', label: 'Email' },
     ];
 
+    const badges = [
+        { icon: Shield, text: "Privacy First", color: "emerald" },
+        { icon: Zap, text: "100% Free", color: "blue" },
+        { icon: UserX, text: "No Login", color: "amber" },
+    ];
+
     return (
-        <footer className="w-full mt-auto bg-slate-950 border-t border-white/5">
-            <div className="w-full max-w-7xl mx-auto px-6 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
+        <footer className="mt-auto bg-slate-950 border-t border-white/5">
+            {/* Main Footer - Single Row */}
+            <div className="w-full max-w-7xl mx-auto px-6 py-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-6">
 
-                    {/* Brand Column (Span 4) */}
-                    <div className="md:col-span-5 space-y-6">
-                        {/* Logo Block matching screenshot */}
+                    {/* Brand Column - Takes 2 columns on lg */}
+                    <div className="lg:col-span-2 space-y-4">
                         <div className="flex items-center gap-4">
-                            {/* Icon Circle */}
-                            <div className="relative w-14 h-14 rounded-full bg-[#0B1221] border border-white/5 flex items-center justify-center shadow-lg shadow-black/40">
-                                <img src="/logo.svg" alt="NotesForge" className="w-8 h-8" />
+                            <div className="w-9 h-9 rounded-lg overflow-hidden bg-slate-900 border border-white/10 p-0.5 flex-shrink-0">
+                                <img src="/logo.svg" alt="NotesForge" className="w-full h-full object-cover rounded" />
                             </div>
-
-                            {/* Text Block */}
                             <div className="flex flex-col">
-                                <span className="text-3xl font-bold text-[#A5B4FC] tracking-tight">
+                                <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 leading-none">
                                     NotesForge
                                 </span>
-                                <span className="text-[10px] sm:text-xs font-bold text-slate-500 tracking-[0.2em] uppercase mt-0.5">
-                                    FREE • PRIVATE • INSTANT
+                                <span className="text-[8px] text-slate-500 font-bold tracking-[0.15em] uppercase">
+                                    Free • Private • Instant
                                 </span>
                             </div>
                         </div>
 
-                        <p className="text-sm text-slate-400 leading-relaxed max-w-sm">
-                            The smartest way to print lecture slides. We help students save paper, ink, and time with secure, browser-based PDF processing tools.
+                        <p className="text-xs text-slate-400 leading-relaxed max-w-xs">
+                            Transform dark lecture slides into print-ready documents. 100% privacy-focused — all processing in your browser.
                         </p>
 
-                        <div className="flex gap-3">
-                            {developerLinks.map((link, i) => (
+                        {/* Badges */}
+                        <div className="flex flex-wrap gap-2">
+                            {badges.map((badge, i) => (
+                                <span
+                                    key={i}
+                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-medium text-slate-300"
+                                >
+                                    <badge.icon className={`w-3 h-3 ${badge.color === 'emerald' ? 'text-emerald-400' :
+                                        badge.color === 'blue' ? 'text-blue-400' : 'text-amber-400'
+                                        }`} />
+                                    {badge.text}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Quick Links */}
+                    <div>
+                        <h4 className="text-xs font-semibold text-white mb-3 uppercase tracking-wider">Quick Links</h4>
+                        <ul className="space-y-2">
+                            <li><button onClick={() => onNavigate?.('about')} className="text-xs text-slate-400 hover:text-white transition-colors">About Us</button></li>
+                            <li><button onClick={() => onNavigate?.('blog')} className="text-xs text-slate-400 hover:text-white transition-colors">Blog & Tech</button></li>
+                            <li><button onClick={scrollToHowItWorks} className="text-xs text-slate-400 hover:text-white transition-colors">How it Works</button></li>
+                            <li><button onClick={() => onNavigate?.('support')} className="text-xs text-slate-400 hover:text-white transition-colors">Support Us</button></li>
+                            <li><button onClick={() => onNavigate?.('contact')} className="text-xs text-slate-400 hover:text-white transition-colors">Contact / Feedback</button></li>
+                        </ul>
+                    </div>
+
+                    {/* Legal */}
+                    <div>
+                        <h4 className="text-xs font-semibold text-white mb-3 uppercase tracking-wider">Legal</h4>
+                        <ul className="space-y-2">
+                            <li><button onClick={() => onNavigate?.('terms')} className="text-xs text-slate-400 hover:text-white transition-colors">Terms & Conditions</button></li>
+                            <li><button onClick={() => onNavigate?.('privacy')} className="text-xs text-slate-400 hover:text-white transition-colors">Privacy Policy</button></li>
+                            <li><button onClick={() => onNavigate?.('refund')} className="text-xs text-slate-400 hover:text-white transition-colors">Refund Policy</button></li>
+                        </ul>
+                    </div>
+
+                    {/* Connect */}
+                    <div>
+                        <h4 className="text-xs font-semibold text-white mb-3 uppercase tracking-wider">Connect</h4>
+                        <div className="flex gap-2 mb-3">
+                            {socialLinks.map((link, i) => (
                                 <a
                                     key={i}
                                     href={link.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:bg-violet-600/20 hover:border-violet-500/30 transition-all shadow-md group"
+                                    className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-violet-600/20 hover:border-violet-500/30 transition-all"
+                                    title={link.label}
                                 >
-                                    <link.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                    <link.icon className="w-4 h-4" />
                                 </a>
                             ))}
                         </div>
-                    </div>
-
-                    {/* Navigation Columns (Span 2 each) */}
-                    <div className="md:col-span-2 md:col-start-7">
-                        <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-5">Platform</h4>
-                        <ul className="space-y-3">
-                            <li><button onClick={() => onNavigate?.('home')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">Home</button></li>
-                            <li><button onClick={() => onNavigate?.('about')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">About Us</button></li>
-                            <li><button onClick={scrollToHowItWorks} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">How it Works</button></li>
-                            <li><button onClick={() => onNavigate?.('upload')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">Start Forging</button></li>
-                        </ul>
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-5">Legal</h4>
-                        <ul className="space-y-3">
-                            <li><button onClick={() => onNavigate?.('terms')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">Terms of Service</button></li>
-                            <li><button onClick={() => onNavigate?.('privacy')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">Privacy Policy</button></li>
-                            <li><button onClick={() => onNavigate?.('refund')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">Refund Policy</button></li>
-                        </ul>
-                    </div>
-
-                    <div className="md:col-span-2">
-                        <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-5">Support</h4>
-                        <ul className="space-y-3">
-                            <li><button onClick={() => onNavigate?.('help')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">Help Center</button></li>
-                            <li><button onClick={() => onNavigate?.('support')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">Support Us</button></li>
-                            <li><button onClick={() => onNavigate?.('contact')} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">Contact</button></li>
-                        </ul>
+                        <p className="text-[10px] text-slate-500">
+                            Reach out via social links above
+                        </p>
                     </div>
                 </div>
+            </div>
 
-                <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-                    <p>© {currentYear} NotesForge. All rights reserved.</p>
-                    <p className="flex items-center gap-1">
-                        Built with <Heart className="w-3 h-3 text-red-500 fill-red-500/20" /> by{' '}
+            {/* Bottom Bar */}
+            <div className="border-t border-white/5 py-4 px-6">
+                <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+                    <p className="text-[11px] text-slate-500">
+                        © {currentYear} NotesForge. All rights reserved.
+                    </p>
+                    <p className="text-[11px] text-slate-500 flex items-center gap-1">
+                        Made with <Heart className="w-3 h-3 text-red-500" /> by{' '}
                         <a
                             href="https://www.linkedin.com/in/abhay-kumar-81b2a8288/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-medium text-slate-400 hover:text-violet-400 transition-colors border-b border-transparent hover:border-violet-400/50 pb-0.5"
+                            className="text-white hover:text-violet-400 transition-colors font-medium"
                         >
                             Abhay Kumar
                         </a>

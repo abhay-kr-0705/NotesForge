@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, X, Info, HelpCircle, Heart, Home, Sparkles } from "lucide-react";
+import { Menu, X, Info, HelpCircle, Heart, Home, Hammer } from "lucide-react";
 import { Button } from "./ui/Button";
 
 export function Navbar({ currentPage, onNavigate }) {
@@ -73,7 +73,7 @@ export function Navbar({ currentPage, onNavigate }) {
                         onClick={() => onNavigate('upload')}
                         className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 shadow-lg shadow-violet-500/25"
                     >
-                        <Sparkles className="w-4 h-4" />
+                        <Hammer className="w-4 h-4" />
                         Start Forging
                     </Button>
                 </div>
@@ -110,7 +110,7 @@ export function Navbar({ currentPage, onNavigate }) {
                             className="w-full flex items-center justify-center gap-2"
                             onClick={() => { onNavigate('upload'); setMobileMenuOpen(false); }}
                         >
-                            <Sparkles className="w-4 h-4" />
+                            <Hammer className="w-4 h-4" />
                             Start Forging
                         </Button>
                     </div>
