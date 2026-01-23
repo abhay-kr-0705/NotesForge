@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Heart, Gift, Sparkles, CheckCircle, Shield, Lock, Zap, Copy, Check, QrCode, Smartphone, ExternalLink, CreditCard, Globe, Rocket, Lightbulb, Users, Server } from 'lucide-react';
+import { ArrowLeft, Heart, Gift, Sparkles, CheckCircle, Shield, Lock, Zap, Copy, Check, QrCode, Smartphone, ExternalLink, CreditCard, Coffee, Rocket, Users, Server } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 export function SupportPage({ onBack }) {
@@ -21,8 +21,8 @@ export function SupportPage({ onBack }) {
         window.open('https://razorpay.me/@abhay07', '_blank');
     };
 
-    const openPayPal = () => {
-        window.open('https://paypal.me/abhayk7481', '_blank');
+    const openBuyMeACoffee = () => {
+        window.open('https://buymeacoffee.com/abhay07', '_blank');
     };
 
     const supportBenefits = [
@@ -137,44 +137,44 @@ export function SupportPage({ onBack }) {
                     </div>
                 </div>
 
-                {/* Other Payment Methods */}
+                {/* Other Payment Methods Grid */}
                 <div className="p-5 rounded-xl bg-white/95">
                     <h3 className="font-bold text-slate-800 mb-1 text-center">Other Payment Methods</h3>
-                    <p className="text-xs text-slate-500 text-center mb-4">Choose your preferred payment platform</p>
+                    <p className="text-xs text-slate-500 text-center mb-4">Secure payments via trusted platforms</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {/* Razorpay Button */}
                         <button
                             onClick={openRazorpay}
-                            className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-400 hover:to-violet-500 transition-all group shadow-lg"
+                            className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-400 hover:to-violet-500 transition-all group shadow-md"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
                                     <CreditCard className="w-5 h-5 text-white" />
                                 </div>
                                 <div className="text-left">
                                     <span className="font-bold text-white block">Razorpay</span>
-                                    <span className="text-xs text-purple-100">UPI, Cards, Wallets</span>
+                                    <span className="text-xs text-purple-100">Cards, Netbanking</span>
                                 </div>
                             </div>
-                            <ExternalLink className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
+                            <ExternalLink className="w-4 h-4 text-white/70 group-hover:text-white" />
                         </button>
 
-                        {/* PayPal Button */}
+                        {/* Buy Me a Coffee Button */}
                         <button
-                            onClick={openPayPal}
-                            className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 transition-all group shadow-lg"
+                            onClick={openBuyMeACoffee}
+                            className="flex items-center justify-between p-4 rounded-xl bg-amber-400 hover:bg-amber-300 transition-all group shadow-md"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
-                                    <Globe className="w-5 h-5 text-white" />
+                                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                                    <Coffee className="w-5 h-5 text-amber-900" />
                                 </div>
                                 <div className="text-left">
-                                    <span className="font-bold text-white block">PayPal</span>
-                                    <span className="text-xs text-blue-100">International Users</span>
+                                    <span className="font-bold text-amber-900 block">Buy Me a Coffee</span>
+                                    <span className="text-xs text-amber-800/80">Support Project</span>
                                 </div>
                             </div>
-                            <ExternalLink className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
+                            <ExternalLink className="w-4 h-4 text-amber-900/60 group-hover:text-amber-900" />
                         </button>
                     </div>
                 </div>

@@ -10,6 +10,7 @@ import { StepProgress } from './StepProgress';
 import { AboutPage } from './pages/AboutPage';
 import { HelpCenterPage } from './pages/HelpCenterPage';
 import { SupportPage } from './pages/SupportPage';
+import { ContactPage } from './pages/ContactPage';
 import { TermsPage, PrivacyPage, RefundPage } from './pages/PolicyPages';
 import { Button } from './ui/Button';
 import { AdBanner } from './ui/AdBanner';
@@ -538,6 +539,9 @@ export function Processor({ currentPage, onNavigate }) {
     }
     if (currentPage === 'support') {
         return <SupportPage onBack={() => onNavigate('home')} />;
+    }
+    if (currentPage === 'contact') {
+        return <ContactPage onBack={() => onNavigate('home')} />;
     }
     if (currentPage === 'terms') {
         return <TermsPage onBack={() => onNavigate('home')} />;
