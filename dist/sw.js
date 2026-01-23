@@ -1,5 +1,5 @@
 // NotesForge Service Worker
-const CACHE_NAME = 'notesforge-v1';
+const CACHE_NAME = 'notesforge-v2';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -60,7 +60,13 @@ self.addEventListener('fetch', (event) => {
             })
             .catch(() => {
                 // Fallback to cache if network fails
-                return caches.match(event.request);
+                return caches.match(event.request).then(response => {
+                    if (response) return response;
+                    return new Response("Offline and not cached", {
+                        status: 503,
+                        headers: { 'Content-Type': 'text/plain' }
+                    });
+                });
             })
     );
 });

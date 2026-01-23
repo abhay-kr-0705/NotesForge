@@ -4,7 +4,7 @@ import { Button } from '../ui/Button';
 
 export function SupportPage({ onBack }) {
     const [copied, setCopied] = useState(false);
-    const upiId = 'NotesForge@ybl';
+    const upiId = 'notesforage@ptyes';
 
     const copyUPI = () => {
         navigator.clipboard.writeText(upiId);
