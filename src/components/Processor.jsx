@@ -32,6 +32,7 @@ export function Processor({ currentPage, onNavigate }) {
     const [processedPdfBlob, setProcessedPdfBlob] = useState(null);
     const fileInputRef = useRef(null);
     const imageInputRef = useRef(null);
+    const pptxInputRef = useRef(null);
     const [draggedImageIndex, setDraggedImageIndex] = useState(null);
 
     const [settings, setSettings] = useState({
@@ -90,9 +91,12 @@ export function Processor({ currentPage, onNavigate }) {
             setPages(newPages);
             setSelectedPages(newPages.map(p => p.id));
 
-            // Stay on upload step to allow adding more PDFs
-            if (step !== 'upload') {
+            // Stay on current step if selecting/editing
+            if (step === 'home') {
                 setStep('upload');
+            } else if (step === 'select') {
+                // Refresh selection to include new pages
+                setSelectedPages([...selectedPages, ...newPages.map(p => p.id)]);
             }
         } catch (err) {
             console.error(err);
@@ -109,28 +113,48 @@ export function Processor({ currentPage, onNavigate }) {
     const handleImagesSelect = async (imageFiles) => {
         setLoading(true);
         setStatus('Loading images...');
-        setUploadMode('images');
+
+        // If coming from home/upload, standard mode. If from select, it's append.
+        const isAppend = step === 'select';
+        if (!isAppend) setUploadMode('images');
 
         try {
+            const currentImages = isAppend ? images : [];
+            const currentPages = isAppend ? pages : [];
+            const startImageId = currentImages.length > 0 ? Math.max(...currentImages.map(img => img.id)) : 0;
+            const startPageId = currentPages.length > 0 ? Math.max(...currentPages.map(p => p.id)) : 0;
+
             const loadedImages = [];
             for (let i = 0; i < imageFiles.length; i++) {
                 setStatus(`Loading image ${i + 1} of ${imageFiles.length}...`);
                 const imgData = await loadImageToCanvas(imageFiles[i]);
                 loadedImages.push({
-                    id: i + 1,
+                    id: startImageId + i + 1,
                     ...imgData,
                     selected: true,
                 });
             }
-            setImages(loadedImages);
-            setPages(loadedImages.map((img, idx) => ({
-                id: idx + 1,
-                pageNum: idx + 1,
+
+            const newImages = [...currentImages, ...loadedImages];
+            setImages(newImages);
+
+            const newPages = loadedImages.map((img, idx) => ({
+                id: startPageId + idx + 1,
+                pageNum: startPageId + idx + 1,
                 thumbnail: img.dataUrl,
+                imageId: img.id, // Store reference to image
                 isImage: true,
-            })));
-            setSelectedPages(loadedImages.map(img => img.id));
-            setStep('upload');
+            }));
+
+            const allPages = [...currentPages, ...newPages];
+            setPages(allPages);
+
+            if (isAppend) {
+                setSelectedPages([...selectedPages, ...newPages.map(p => p.id)]);
+            } else {
+                setSelectedPages(newPages.map(p => p.id));
+                setStep('upload');
+            }
         } catch (err) {
             console.error(err);
             alert('Error loading images. Please try again.');
@@ -142,9 +166,12 @@ export function Processor({ currentPage, onNavigate }) {
 
     // Handle PPTX uploads - extract slides and treat as images
     const handlePptxSelect = async (pptxFile) => {
+        console.log("PPTX Handler v2.0 - Loaded"); // Verification log
         setLoading(true);
         setStatus('Extracting PowerPoint slides...');
-        setUploadMode('pptx');
+
+        const isAppend = step === 'select';
+        if (!isAppend) setUploadMode('pptx');
 
         try {
             const extractedSlides = await extractPptxSlides(pptxFile, (progressMsg) => {
@@ -155,9 +182,14 @@ export function Processor({ currentPage, onNavigate }) {
                 throw new Error('No slides could be extracted from the PowerPoint file.');
             }
 
+            const currentImages = isAppend ? images : [];
+            const currentPages = isAppend ? pages : [];
+            const startImageId = currentImages.length > 0 ? Math.max(...currentImages.map(img => img.id)) : 0;
+            const startPageId = currentPages.length > 0 ? Math.max(...currentPages.map(p => p.id)) : 0;
+
             // extractPptxSlides returns slide objects with canvas, dataUrl, width, height properties
             const loadedImages = extractedSlides.map((slide, i) => ({
-                id: i + 1,
+                id: startImageId + i + 1,
                 canvas: slide.canvas,
                 dataUrl: slide.dataUrl,
                 width: slide.width,
@@ -166,16 +198,27 @@ export function Processor({ currentPage, onNavigate }) {
                 selected: true,
             }));
 
-            setImages(loadedImages);
-            setPages(loadedImages.map((img, idx) => ({
-                id: idx + 1,
-                pageNum: idx + 1,
+            const newImages = [...currentImages, ...loadedImages];
+            setImages(newImages);
+
+            const newPages = loadedImages.map((img, idx) => ({
+                id: startPageId + idx + 1,
+                pageNum: startPageId + idx + 1,
                 thumbnail: img.dataUrl,
+                imageId: img.id,
                 isImage: true,
                 isPptx: true,
-            })));
-            setSelectedPages(loadedImages.map(img => img.id));
-            setStep('upload');
+            }));
+
+            const allPages = [...currentPages, ...newPages];
+            setPages(allPages);
+
+            if (isAppend) {
+                setSelectedPages([...selectedPages, ...newPages.map(p => p.id)]);
+            } else {
+                setSelectedPages(newPages.map(p => p.id));
+                setStep('upload');
+            }
         } catch (err) {
             console.error('PPTX extraction error:', err);
             alert('Error extracting PowerPoint slides: ' + err.message + '\n\nNote: Only .pptx files (PowerPoint 2007+) are supported.');
@@ -254,7 +297,30 @@ export function Processor({ currentPage, onNavigate }) {
         setPages(pages.map(p => p.id === editedPage.id ? editedPage : p));
     };
 
-    // Image drag and drop handlers for reordering
+    const handlePptxInputChange = (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            handlePptxSelect(file);
+            e.target.value = '';
+        }
+    };
+
+    const handleReorder = (sourceId, targetId) => {
+        const sourceIndex = pages.findIndex(p => p.id === sourceId);
+        const targetIndex = pages.findIndex(p => p.id === targetId);
+
+        if (sourceIndex === -1 || targetIndex === -1) return;
+
+        const newPages = [...pages];
+        const [movedPage] = newPages.splice(sourceIndex, 1);
+        newPages.splice(targetIndex, 0, movedPage);
+
+        // Re-assign IDs to maintain sequential order if needed, or just keep original IDs
+        // For now, let's keep original IDs as they are used for selection
+        setPages(newPages);
+    };
+
+    // Drag and Drop (Legacy for Upload step)
     const handleImageDragStart = (e, index) => {
         setDraggedImageIndex(index);
         e.dataTransfer.effectAllowed = 'move';
@@ -302,70 +368,23 @@ export function Processor({ currentPage, onNavigate }) {
     };
 
     const handleProcess = async () => {
-        // Handle image mode differently
-        if (uploadMode === 'images' && images.length > 0) {
-            setProcessing(true);
-            setStep('processing');
-            try {
-                // Apply filters to selected images
-                const processedImages = [];
-                for (let i = 0; i < images.length; i++) {
-                    setStatus(`Processing image ${i + 1}/${images.length}...`);
-                    const img = images[i];
-                    // Create a copy of the canvas
-                    let canvas = document.createElement('canvas');
-                    canvas.width = img.canvas.width;
-                    canvas.height = img.canvas.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img.canvas, 0, 0);
-
-                    // Remove teacher if enabled (AI-powered)
-                    if (settings.removeTeacher) {
-                        setStatus(`Removing teacher from image ${i + 1}/${images.length}...`);
-                        try {
-                            canvas = await removeTeacher(canvas, (msg) => setStatus(`Image ${i + 1}: ${msg}`));
-                        } catch (err) {
-                            console.warn('Teacher removal failed for image', i + 1, err);
-                            // Continue with original canvas if removal fails
-                        }
-                    }
-
-                    // Apply other filters
-                    applyImageFilters(canvas, settings);
-                    processedImages.push({
-                        canvas,
-                        dataUrl: canvas.toDataURL('image/png'),
-                    });
-                }
-                setStatus('Generating PDF...');
-                const blob = await generatePdfFromImages(processedImages, settings);
-                setProcessedPdfBlob(blob);
-                setStep('success');
-            } catch (err) {
-                console.error(err);
-                alert('Processing Failed. Please try again.');
-                setStep('settings');
-            } finally {
-                setProcessing(false);
-                setStatus('');
-            }
-            return;
-        }
-
-        // PDF mode
-        if (files.length === 0) return;
+        if (selectedPages.length === 0) return;
         setProcessing(true);
         setStep('processing');
 
         try {
             const processedImages = [];
+            // Use 'pages' array to determine order, but filter by selection
+            const pagesToProcess = pages.filter(p => selectedPages.includes(p.id));
 
-            for (let i = 0; i < selectedPages.length; i++) {
-                const pageId = selectedPages[i];
-                const pageData = pages.find(p => p.id === pageId);
-                if (!pageData) continue;
+            if (pagesToProcess.length === 0) {
+                // If selectedPages contains IDs not in pages (shouldn't happen), try intersection
+                throw new Error("No valid pages selected.");
+            }
 
-                setStatus(`Processing page ${i + 1}/${selectedPages.length}...`);
+            for (let i = 0; i < pagesToProcess.length; i++) {
+                const pageData = pagesToProcess[i];
+                setStatus(`Processing page ${i + 1}/${pagesToProcess.length}...`);
 
                 let canvas;
 
@@ -381,6 +400,40 @@ export function Processor({ currentPage, onNavigate }) {
                     canvas.width = img.width;
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
+                } else if (pageData.isImage || pageData.isPptx) {
+                    // It's an image/PPT slide
+                    const fileId = pageData.imageId || pageData.id; // Fallback to id if imageId missing (legacy)
+                    const originalImg = images.find(img => img.id === fileId);
+
+                    if (originalImg && originalImg.canvas) {
+                        canvas = document.createElement('canvas');
+                        canvas.width = originalImg.canvas.width;
+                        canvas.height = originalImg.canvas.height;
+                        canvas.getContext('2d').drawImage(originalImg.canvas, 0, 0);
+                    } else if (originalImg && originalImg.dataUrl) {
+                        // Fallback to dataURL if canvas lost/missing
+                        canvas = await loadImageToCanvas(originalImg.file || { name: 'image' }).then(res => res.canvas);
+                    } else {
+                        // Last resort: thumbnail
+                        canvas = document.createElement('canvas');
+                        const img = new Image();
+                        await new Promise((resolve) => { img.onload = resolve; img.src = pageData.thumbnail; });
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        canvas.getContext('2d').drawImage(img, 0, 0);
+                    }
+
+                    // Remove teacher if enabled
+                    if (settings.removeTeacher) {
+                        setStatus(`Removing teacher from page ${i + 1}...`);
+                        try {
+                            canvas = await removeTeacher(canvas, (msg) => setStatus(`Page ${i + 1}: ${msg}`));
+                        } catch (err) {
+                            console.warn('Teacher removal failed', err);
+                        }
+                    }
+
+                    applyImageFilters(canvas, settings);
                 } else {
                     // Render from original PDF
                     const file = files[pageData.fileIndex];
@@ -388,7 +441,7 @@ export function Processor({ currentPage, onNavigate }) {
                     const scale = settings.quality === 'high' ? 2 : settings.quality === 'low' ? 1 : 1.5;
                     canvas = await renderPageToImage(pdf, pageData.pageNum, scale);
 
-                    // Apply all selected filters
+                    // Apply all selected filters to PDF page
                     canvas = applyFilters(canvas, settings);
                 }
 
@@ -540,6 +593,13 @@ export function Processor({ currentPage, onNavigate }) {
                     accept="image/png,image/jpeg,image/webp,image/gif"
                     multiple
                     onChange={handleImageInputChange}
+                    className="hidden"
+                />
+                <input
+                    ref={pptxInputRef}
+                    type="file"
+                    accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                    onChange={handlePptxInputChange}
                     className="hidden"
                 />
 
@@ -751,6 +811,30 @@ export function Processor({ currentPage, onNavigate }) {
     if (step === 'select') {
         return (
             <div className="max-w-6xl mx-auto space-y-6">
+                {/* Hidden file inputs for adding more content */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileInputChange}
+                    className="hidden"
+                />
+                <input
+                    ref={imageInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    multiple
+                    onChange={handleImageInputChange}
+                    className="hidden"
+                />
+                <input
+                    ref={pptxInputRef}
+                    type="file"
+                    accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                    onChange={handlePptxInputChange}
+                    className="hidden"
+                />
+
                 <StepProgress currentStep={3} onStepClick={handleStepNavigate} canNavigateToStep={canNavigateToStep} />
                 <PageSelector
                     pages={pages}
@@ -759,6 +843,10 @@ export function Processor({ currentPage, onNavigate }) {
                     onPageEdit={handlePageEdit}
                     onContinue={() => setStep('settings')}
                     onBack={goBack}
+                    onReorder={handleReorder}
+                    onAddPdfs={() => fileInputRef.current?.click()}
+                    onAddImages={() => imageInputRef.current?.click()}
+                    onAddPptx={() => pptxInputRef.current?.click()}
                 />
             </div>
         );

@@ -4,9 +4,42 @@ import { Button } from './ui/Button';
 import { PageEditor } from './PageEditor';
 import { cn } from '../lib/cn';
 
-export function PageSelector({ pages, selectedPages, onSelectionChange, onPageEdit, onContinue, onBack }) {
+import { UploadCloud, FileText, Image, Presentation } from 'lucide-react';
+
+export function PageSelector({
+    pages,
+    selectedPages,
+    onSelectionChange,
+    onPageEdit,
+    onContinue,
+    onBack,
+    onReorder,
+    onAddPdfs,
+    onAddImages,
+    onAddPptx
+}) {
     const [hoveredPage, setHoveredPage] = useState(null);
     const [editingPage, setEditingPage] = useState(null);
+    const [draggedPageId, setDraggedPageId] = useState(null);
+
+    const handleDragStart = (e, pageId) => {
+        setDraggedPageId(pageId);
+        e.dataTransfer.effectAllowed = 'move';
+        // Set transparent drag image or basic ghost
+    };
+
+    const handleDragOver = (e, targetPageId) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+
+    const handleDrop = (e, targetPageId) => {
+        e.preventDefault();
+        if (draggedPageId && draggedPageId !== targetPageId) {
+            onReorder?.(draggedPageId, targetPageId);
+        }
+        setDraggedPageId(null);
+    };
 
     const togglePage = (pageId) => {
         if (selectedPages.includes(pageId)) {
@@ -69,11 +102,16 @@ export function PageSelector({ pages, selectedPages, onSelectionChange, onPageEd
                         return (
                             <div
                                 key={page.id}
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, page.id)}
+                                onDragOver={(e) => handleDragOver(e, page.id)}
+                                onDrop={(e) => handleDrop(e, page.id)}
                                 className={cn(
                                     "relative group rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border-2",
                                     isSelected
                                         ? "border-violet-500 shadow-lg shadow-violet-500/20"
-                                        : "border-slate-700 opacity-50 hover:opacity-80"
+                                        : "border-slate-700 opacity-50 hover:opacity-80",
+                                    draggedPageId === page.id && "opacity-20 border-dashed"
                                 )}
                                 onClick={() => togglePage(page.id)}
                                 onMouseEnter={() => setHoveredPage(page.id)}
@@ -119,6 +157,23 @@ export function PageSelector({ pages, selectedPages, onSelectionChange, onPageEd
                             </div>
                         );
                     })}
+                </div>
+
+                {/* Add More Content Buttons */}
+                <div className="flex flex-wrap items-center justify-center gap-4 py-4 border-t border-white/5 bg-slate-800/20 rounded-xl">
+                    <span className="text-sm font-medium text-slate-400 w-full text-center sm:w-auto">Add more:</span>
+
+                    <button onClick={onAddPdfs} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 transition-colors text-sm border border-blue-600/30">
+                        <FileText className="w-4 h-4" /> PDF
+                    </button>
+
+                    <button onClick={onAddPptx} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-600/20 text-orange-400 hover:bg-orange-600/30 transition-colors text-sm border border-orange-600/30">
+                        <Presentation className="w-4 h-4" /> PPT
+                    </button>
+
+                    <button onClick={onAddImages} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 transition-colors text-sm border border-emerald-600/30">
+                        <Image className="w-4 h-4" /> Images
+                    </button>
                 </div>
 
                 {/* Actions */}
