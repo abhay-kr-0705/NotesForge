@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, BookOpen, Code, Cpu, Shield, Zap, FileText, Globe, Lock, Brain, Layers, Share2, Smartphone, WifiOff } from 'lucide-react';
+import { ArrowLeft, BookOpen, Code, Cpu, Shield, Zap, FileText, Globe, Lock, Brain, Layers, Share2, Smartphone, WifiOff, Heart, Printer, UserX } from 'lucide-react';
 
 export function BlogPage({ onBack }) {
     const articles = [
