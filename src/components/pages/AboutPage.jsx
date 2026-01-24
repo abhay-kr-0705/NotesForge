@@ -155,11 +155,11 @@ export function AboutPage({ onBack, onNavigate }) {
                 </div>
             </div>
 
-            {/* Why NotesForge */}
-            <div className="p-5 rounded-xl bg-gradient-to-br from-violet-900/20 to-fuchsia-900/10 border border-violet-500/20">
+            {/* Our Story */}
+            <div className="p-5 rounded-xl bg-slate-900/50 border border-white/5">
                 <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-amber-400" />
-                    Story Behind NotesForge
+                    <BookOpen className="w-5 h-5 text-cyan-400" />
+                    Why NotesForge
                 </h2>
                 <div className="space-y-3 text-slate-300 leading-relaxed text-sm">
                     <p>
@@ -176,6 +176,29 @@ export function AboutPage({ onBack, onNavigate }) {
                     <p>
                         Today, NotesForge helps thousands of students save money on printing while keeping their study
                         materials private and secure.
+                    </p>
+                </div>
+            </div>
+
+            {/* Why NotesForge */}
+            <div className="p-5 rounded-xl bg-gradient-to-br from-violet-900/20 to-fuchsia-900/10 border border-violet-500/20">
+                <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-amber-400" />
+                    Story Behind NotesForge
+                </h2>
+                <div className="space-y-3 text-slate-300 leading-relaxed text-sm">
+                    <p>
+                        During my IIT JEE preparation journey (and now in GATE), I stepped into a whole new era of
+                        digital learning. Online classes were packed with information, and it felt impossible to
+                        capture everything in my notes. I often spent hours trying to organize content, only to
+                        feel that I was falling behind. It was frustrating, exhausting, and overwhelming — yet
+                        I knew there had to be a better way.
+                    </p>
+                    <p>
+                        That's when <span className="text-violet-400 font-medium">NotesForge</span> was born. I created a platform
+                        that turns digital lessons and slides into clear, printable notes, saving precious time,
+                        reducing effort, and allowing students to focus on learning, understanding, and achieving
+                        their goals.
                     </p>
                 </div>
             </div>

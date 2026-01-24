@@ -240,9 +240,7 @@ export function BlogPage({ onBack }) {
                     We're always looking for new ideas and questions to answer.
                 </p>
                 <div className="flex justify-center gap-3">
-                    <button className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium transition-colors border border-white/5">
-                        Ask on GitHub
-                    </button>
+
                     <button
                         onClick={() => window.location.href = 'mailto:abhayk7481@gmail.com'}
                         className="px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium transition-colors"

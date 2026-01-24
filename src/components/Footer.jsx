@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Github, Linkedin, Mail, Shield, Zap, UserX } from 'lucide-react';
+import { Heart, Linkedin, Mail, Shield, Zap, UserX } from 'lucide-react';
 
 export function Footer({ onNavigate }) {
     const currentYear = new Date().getFullYear();
@@ -15,7 +15,7 @@ export function Footer({ onNavigate }) {
     };
 
     const socialLinks = [
-        { icon: Github, href: 'https://github.com/abhay-kr-0705', label: 'GitHub' },
+
         { icon: Linkedin, href: 'https://www.linkedin.com/in/abhay-kumar-81b2a8288/', label: 'LinkedIn' },
         { icon: Mail, href: 'mailto:abhayk7481@gmail.com', label: 'Email' },
     ];
