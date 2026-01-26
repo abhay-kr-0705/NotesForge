@@ -1,8 +1,10 @@
 import React from 'react';
 import { Heart, Linkedin, Mail, Shield, Zap, UserX } from 'lucide-react';
+import { useTheme } from '../lib/ThemeContext';
 
 export function Footer({ onNavigate }) {
     const currentYear = new Date().getFullYear();
+    const { isLight } = useTheme();
 
     const scrollToHowItWorks = () => {
         if (onNavigate) onNavigate('home');
@@ -27,7 +29,10 @@ export function Footer({ onNavigate }) {
     ];
 
     return (
-        <footer className="mt-auto bg-slate-950 border-t border-white/5">
+        <footer className={`mt-auto border-t ${isLight
+                ? "bg-slate-50 border-slate-200"
+                : "bg-slate-950 border-white/5"
+            }`}>
             {/* Main Footer - Single Row */}
             <div className="w-full max-w-7xl mx-auto px-6 py-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-6">
@@ -35,20 +40,28 @@ export function Footer({ onNavigate }) {
                     {/* Brand Column - Takes 2 columns on lg */}
                     <div className="lg:col-span-2 space-y-4">
                         <div className="flex items-center gap-4">
-                            <div className="w-9 h-9 rounded-lg overflow-hidden bg-slate-900 border border-white/10 p-0.5 flex-shrink-0">
-                                <img src="/logo.svg" alt="NotesForge" className="w-full h-full object-cover rounded" />
+                            <div className={`w-9 h-9 rounded-lg overflow-hidden p-0.5 flex-shrink-0 ${isLight
+                                    ? "bg-white border border-slate-200 shadow-sm"
+                                    : "bg-slate-900 border border-white/10"
+                                }`}>
+                                <img src="/Gemini_Generated_Image_6jwaga6jwaga6jwa.png" alt="NotesForge" className="w-full h-full object-cover rounded" />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 leading-none">
+                                <span className={`text-lg font-bold bg-clip-text text-transparent leading-none ${isLight
+                                        ? "bg-gradient-to-r from-slate-700 to-slate-900"
+                                        : "bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400"
+                                    }`}>
                                     NotesForge
                                 </span>
-                                <span className="text-[8px] text-slate-500 font-bold tracking-[0.15em] uppercase">
+                                <span className={`text-[8px] font-bold tracking-[0.15em] uppercase ${isLight ? "text-slate-500" : "text-slate-500"
+                                    }`}>
                                     Free • Private • Instant
                                 </span>
                             </div>
                         </div>
 
-                        <p className="text-xs text-slate-400 leading-relaxed max-w-xs">
+                        <p className={`text-xs leading-relaxed max-w-xs ${isLight ? "text-slate-500" : "text-slate-400"
+                            }`}>
                             Transform dark lecture slides into print-ready documents. 100% privacy-focused — all processing in your browser.
                         </p>
 
@@ -57,10 +70,13 @@ export function Footer({ onNavigate }) {
                             {badges.map((badge, i) => (
                                 <span
                                     key={i}
-                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] font-medium text-slate-300"
+                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium ${isLight
+                                            ? "bg-white border border-slate-200 text-slate-600 shadow-sm"
+                                            : "bg-slate-900 border border-slate-800 text-slate-300"
+                                        }`}
                                 >
-                                    <badge.icon className={`w-3 h-3 ${badge.color === 'emerald' ? 'text-emerald-400' :
-                                        badge.color === 'blue' ? 'text-blue-400' : 'text-amber-400'
+                                    <badge.icon className={`w-3 h-3 ${badge.color === 'emerald' ? 'text-emerald-500' :
+                                        badge.color === 'blue' ? 'text-blue-500' : 'text-amber-500'
                                         }`} />
                                     {badge.text}
                                 </span>
@@ -70,29 +86,32 @@ export function Footer({ onNavigate }) {
 
                     {/* Quick Links */}
                     <div>
-                        <h4 className="text-xs font-semibold text-white mb-3 uppercase tracking-wider">Quick Links</h4>
+                        <h4 className={`text-xs font-semibold mb-3 uppercase tracking-wider ${isLight ? "text-slate-900" : "text-white"
+                            }`}>Quick Links</h4>
                         <ul className="space-y-2">
-                            <li><button onClick={() => onNavigate?.('about')} className="text-xs text-slate-400 hover:text-white transition-colors">About Us</button></li>
-                            <li><button onClick={() => onNavigate?.('blog')} className="text-xs text-slate-400 hover:text-white transition-colors">Blog & Tech</button></li>
-                            <li><button onClick={scrollToHowItWorks} className="text-xs text-slate-400 hover:text-white transition-colors">How it Works</button></li>
-                            <li><button onClick={() => onNavigate?.('support')} className="text-xs text-slate-400 hover:text-white transition-colors">Support Us</button></li>
-                            <li><button onClick={() => onNavigate?.('contact')} className="text-xs text-slate-400 hover:text-white transition-colors">Contact / Feedback</button></li>
+                            <li><button onClick={() => onNavigate?.('about')} className={`text-xs transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}>About Us</button></li>
+                            <li><button onClick={() => onNavigate?.('blog')} className={`text-xs transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}>Blog & Tech</button></li>
+                            <li><button onClick={scrollToHowItWorks} className={`text-xs transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}>How it Works</button></li>
+                            <li><button onClick={() => onNavigate?.('support')} className={`text-xs transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}>Support Us</button></li>
+                            <li><button onClick={() => onNavigate?.('contact')} className={`text-xs transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}>Contact / Feedback</button></li>
                         </ul>
                     </div>
 
                     {/* Legal */}
                     <div>
-                        <h4 className="text-xs font-semibold text-white mb-3 uppercase tracking-wider">Legal</h4>
+                        <h4 className={`text-xs font-semibold mb-3 uppercase tracking-wider ${isLight ? "text-slate-900" : "text-white"
+                            }`}>Legal</h4>
                         <ul className="space-y-2">
-                            <li><button onClick={() => onNavigate?.('terms')} className="text-xs text-slate-400 hover:text-white transition-colors">Terms & Conditions</button></li>
-                            <li><button onClick={() => onNavigate?.('privacy')} className="text-xs text-slate-400 hover:text-white transition-colors">Privacy Policy</button></li>
-                            <li><button onClick={() => onNavigate?.('refund')} className="text-xs text-slate-400 hover:text-white transition-colors">Refund Policy</button></li>
+                            <li><button onClick={() => onNavigate?.('terms')} className={`text-xs transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}>Terms & Conditions</button></li>
+                            <li><button onClick={() => onNavigate?.('privacy')} className={`text-xs transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}>Privacy Policy</button></li>
+                            <li><button onClick={() => onNavigate?.('refund')} className={`text-xs transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}>Refund Policy</button></li>
                         </ul>
                     </div>
 
                     {/* Connect */}
                     <div>
-                        <h4 className="text-xs font-semibold text-white mb-3 uppercase tracking-wider">Connect</h4>
+                        <h4 className={`text-xs font-semibold mb-3 uppercase tracking-wider ${isLight ? "text-slate-900" : "text-white"
+                            }`}>Connect</h4>
                         <div className="flex gap-2 mb-3">
                             {socialLinks.map((link, i) => (
                                 <a
@@ -100,14 +119,17 @@ export function Footer({ onNavigate }) {
                                     href={link.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-violet-600/20 hover:border-violet-500/30 transition-all"
+                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isLight
+                                            ? "bg-white border border-slate-200 text-slate-500 hover:text-violet-600 hover:border-violet-300 shadow-sm"
+                                            : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-violet-600/20 hover:border-violet-500/30"
+                                        }`}
                                     title={link.label}
                                 >
                                     <link.icon className="w-4 h-4" />
                                 </a>
                             ))}
                         </div>
-                        <p className="text-[10px] text-slate-500">
+                        <p className={`text-[10px] ${isLight ? "text-slate-500" : "text-slate-500"}`}>
                             Reach out via social links above
                         </p>
                     </div>
@@ -115,18 +137,20 @@ export function Footer({ onNavigate }) {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-white/5 py-4 px-6">
+            <div className={`border-t py-4 px-6 ${isLight ? "border-slate-200" : "border-white/5"
+                }`}>
                 <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-                    <p className="text-[11px] text-slate-500">
+                    <p className={`text-[11px] ${isLight ? "text-slate-500" : "text-slate-500"}`}>
                         © {currentYear} NotesForge. All rights reserved.
                     </p>
-                    <p className="text-[11px] text-slate-500 flex items-center gap-1">
+                    <p className={`text-[11px] flex items-center gap-1 ${isLight ? "text-slate-500" : "text-slate-500"}`}>
                         Made with <Heart className="w-3 h-3 text-red-500" /> by{' '}
                         <a
                             href="https://www.linkedin.com/in/abhay-kumar-81b2a8288/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white hover:text-violet-400 transition-colors font-medium"
+                            className={`font-medium transition-colors ${isLight ? "text-slate-700 hover:text-violet-600" : "text-white hover:text-violet-400"
+                                }`}
                         >
                             Abhay Kumar
                         </a>
@@ -136,3 +160,4 @@ export function Footer({ onNavigate }) {
         </footer>
     );
 }
+

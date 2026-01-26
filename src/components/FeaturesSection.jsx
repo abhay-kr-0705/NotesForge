@@ -1,7 +1,10 @@
 import React from 'react';
 import { Shield, Zap, Grid, Palette, FileOutput, Lock, Sparkles, MoveVertical } from 'lucide-react';
+import { useTheme } from '../lib/ThemeContext';
 
 export function FeaturesSection() {
+    const { isLight } = useTheme();
+
     const features = [
         {
             icon: Shield,
@@ -48,50 +51,69 @@ export function FeaturesSection() {
     ];
 
     return (
-        <section id="features" className="py-20">
+        <section id="features" className={`pt-20 pb-8 ${isLight ? "bg-white" : ""}`}>
             {/* Section Header */}
-            <div className="text-center max-w-2xl mx-auto mb-16">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs mb-4">
+            <div className="text-center max-w-2xl mx-auto mb-16 px-4">
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs mb-4 ${isLight
+                    ? "bg-slate-100 border border-slate-200 text-slate-600 font-medium"
+                    : "bg-violet-500/10 border border-violet-500/20 text-violet-400"
+                    }`}>
                     <Sparkles className="w-3 h-3" />
                     <span>Features</span>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${isLight ? "text-slate-900 tracking-tight" : "text-white"}`}>
                     Everything You Need to{' '}
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400">
+                    <span className={`bg-clip-text text-transparent ${isLight
+                        ? "bg-gradient-to-r from-violet-600 to-violet-600 text-violet-600" // Solid color feel for light mode
+                        : "bg-gradient-to-r from-violet-400 to-cyan-400"
+                        }`}>
                         Print Smart
                     </span>
                 </h2>
-                <p className="text-slate-400">
+                <p className={isLight ? "text-slate-600 max-w-lg mx-auto" : "text-slate-400"}>
                     Powerful tools designed specifically for students who want to save ink, paper, and study time.
                 </p>
             </div>
 
             {/* Features Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {features.map((feature, index) => (
-                    <div
-                        key={index}
-                        className="group relative p-6 rounded-2xl bg-slate-900/50 border border-white/5 hover:border-white/10 transition-all duration-500 hover:-translate-y-1"
-                    >
-                        {/* Glow Effect */}
-                        <div className={`absolute inset-0 ${feature.bgGlow} rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500`} />
+            <div className="container mx-auto px-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {features.map((feature, index) => (
+                        <div
+                            key={index}
+                            className={`group relative p-6 rounded-2xl transition-all duration-500 hover:-translate-y-1 ${isLight
+                                ? "bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300"
+                                : "bg-slate-900/50 border border-white/5 hover:border-white/10"
+                                }`}
+                        >
+                            {/* Glow Effect - only in dark mode */}
+                            {!isLight && (
+                                <div className={`absolute inset-0 ${feature.bgGlow} rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500`} />
+                            )}
 
-                        <div className="relative">
-                            {/* Icon */}
-                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg`}>
-                                <feature.icon className="w-6 h-6 text-white" />
+                            <div className="relative">
+                                {/* Icon */}
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${isLight
+                                    ? "bg-slate-100 text-slate-900"
+                                    : `bg-gradient-to-br ${feature.gradient} shadow-lg`
+                                    }`}>
+                                    <feature.icon className={`w-6 h-6 ${isLight ? "text-slate-700" : "text-white"}`} />
+                                </div>
+
+                                {/* Content */}
+                                <h3 className={`text-lg font-bold mb-2 transition-colors ${isLight
+                                    ? "text-slate-900"
+                                    : "text-white group-hover:text-violet-300"
+                                    }`}>
+                                    {feature.title}
+                                </h3>
+                                <p className={`text-sm leading-relaxed ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+                                    {feature.description}
+                                </p>
                             </div>
-
-                            {/* Content */}
-                            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-violet-300 transition-colors">
-                                {feature.title}
-                            </h3>
-                            <p className="text-slate-400 text-sm leading-relaxed">
-                                {feature.description}
-                            </p>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </section>
     );

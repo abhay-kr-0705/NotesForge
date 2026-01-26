@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Heart, Gift, Sparkles, CheckCircle, Shield, Lock, Zap, Copy, Check, QrCode, Smartphone, ExternalLink, CreditCard, Coffee, Rocket, Users, Server } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { useTheme } from '../../lib/ThemeContext';
 
 export function SupportPage({ onBack }) {
     const [copied, setCopied] = useState(false);
     const upiId = 'notesforage@ptyes';
+    const { isLight } = useTheme();
 
     const copyUPI = () => {
         navigator.clipboard.writeText(upiId);
@@ -43,7 +45,8 @@ export function SupportPage({ onBack }) {
             {/* Back Button */}
             <button
                 onClick={onBack}
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm"
+                className={`flex items-center gap-2 transition-colors text-sm ${isLight ? "text-gray-500 hover:text-gray-900" : "text-slate-400 hover:text-white"
+                    }`}
             >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Home
@@ -52,34 +55,41 @@ export function SupportPage({ onBack }) {
             {/* Hero */}
             <div className="text-center space-y-4">
                 <div className="relative inline-block">
-                    <div className="absolute inset-0 bg-violet-500/30 rounded-full blur-xl animate-pulse" />
+                    <div className={`absolute inset-0 rounded-full blur-xl animate-pulse ${isLight ? "bg-violet-300/40" : "bg-violet-500/30"
+                        }`} />
                     <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mx-auto shadow-lg shadow-violet-500/30">
                         <Heart className="w-8 h-8 text-white" />
                     </div>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-bold text-white">
+                <h1 className={`text-3xl md:text-4xl font-bold ${isLight ? "text-gray-900" : "text-white"}`}>
                     Support{' '}
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-purple-400">
+                    <span className={`bg-clip-text text-transparent ${isLight
+                            ? "bg-gradient-to-r from-violet-600 to-purple-600"
+                            : "bg-gradient-to-r from-violet-400 to-purple-400"
+                        }`}>
                         NotesForge
                     </span>
                 </h1>
-                <p className="text-slate-400 max-w-md mx-auto">
+                <p className={`max-w-md mx-auto ${isLight ? "text-gray-600" : "text-slate-400"}`}>
                     Help us bring powerful new features and keep NotesForge free forever for everyone
                 </p>
             </div>
 
             {/* Main Payment Card */}
-            <div className="p-6 rounded-2xl bg-gradient-to-br from-violet-600/30 via-purple-600/20 to-fuchsia-600/20 border border-violet-500/30 shadow-xl">
+            <div className={`p-6 rounded-2xl shadow-xl ${isLight
+                    ? "bg-gradient-to-br from-violet-100 via-purple-50 to-fuchsia-50 border border-violet-200"
+                    : "bg-gradient-to-br from-violet-600/30 via-purple-600/20 to-fuchsia-600/20 border border-violet-500/30"
+                }`}>
                 <div className="text-center mb-5">
-                    <h2 className="text-xl font-bold text-white mb-1">Support NotesForge</h2>
-                    <p className="text-sm text-violet-200/70 italic">
+                    <h2 className={`text-xl font-bold mb-1 ${isLight ? "text-gray-900" : "text-white"}`}>Support NotesForge</h2>
+                    <p className={`text-sm italic ${isLight ? "text-violet-600/70" : "text-violet-200/70"}`}>
                         Every contribution, no matter how small, makes a big difference
                     </p>
                 </div>
 
                 {/* UPI Section (India) */}
-                <div className="p-5 rounded-xl bg-white/95 mb-4">
+                <div className="p-5 rounded-xl bg-white mb-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-4">
                         <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
                             <Smartphone className="w-4 h-4 text-violet-600" />
@@ -138,7 +148,7 @@ export function SupportPage({ onBack }) {
                 </div>
 
                 {/* Other Payment Methods Grid */}
-                <div className="p-5 rounded-xl bg-white/95">
+                <div className="p-5 rounded-xl bg-white shadow-sm">
                     <h3 className="font-bold text-slate-800 mb-1 text-center">Other Payment Methods</h3>
                     <p className="text-xs text-slate-500 text-center mb-4">Secure payments via trusted platforms</p>
 
@@ -181,38 +191,52 @@ export function SupportPage({ onBack }) {
             </div>
 
             {/* Other Ways to Help */}
-            <div className="p-5 rounded-xl bg-violet-500/10 border border-violet-500/20">
-                <h3 className="font-bold text-white mb-3">Other Ways to Help</h3>
+            <div className={`p-5 rounded-xl ${isLight
+                    ? "bg-violet-50 border border-violet-200"
+                    : "bg-violet-500/10 border border-violet-500/20"
+                }`}>
+                <h3 className={`font-bold mb-3 ${isLight ? "text-gray-900" : "text-white"}`}>Other Ways to Help</h3>
                 <div className="space-y-2">
                     {otherWays.map((way, index) => (
                         <div key={index} className="flex items-start gap-3 p-2">
-                            <div className="w-5 h-5 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <CheckCircle className="w-3 h-3 text-violet-400" />
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isLight ? "bg-violet-200" : "bg-violet-500/20"
+                                }`}>
+                                <CheckCircle className={`w-3 h-3 ${isLight ? "text-violet-600" : "text-violet-400"}`} />
                             </div>
-                            <span className="text-sm text-slate-300">{way}</span>
+                            <span className={`text-sm ${isLight ? "text-gray-700" : "text-slate-300"}`}>{way}</span>
                         </div>
                     ))}
                 </div>
             </div>
 
             {/* Why Your Support Matters */}
-            <div className="p-5 rounded-xl bg-slate-900/50 border border-white/5">
-                <h2 className="text-lg font-bold text-white mb-4 text-center">Why Your Support Matters</h2>
+            <div className={`p-5 rounded-xl ${isLight
+                    ? "bg-white border border-gray-200 shadow-sm"
+                    : "bg-slate-900/50 border border-white/5"
+                }`}>
+                <h2 className={`text-lg font-bold mb-4 text-center ${isLight ? "text-gray-900" : "text-white"}`}>Why Your Support Matters</h2>
                 <div className="grid grid-cols-2 gap-3">
                     {supportBenefits.map((benefit, index) => (
-                        <div key={index} className="p-4 rounded-xl bg-slate-800/50 border border-white/5 hover:border-violet-500/30 transition-colors">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center mb-3">
-                                <benefit.icon className="w-5 h-5 text-violet-400" />
+                        <div key={index} className={`p-4 rounded-xl transition-colors ${isLight
+                                ? "bg-gray-50 border border-gray-200 hover:border-violet-300"
+                                : "bg-slate-800/50 border border-white/5 hover:border-violet-500/30"
+                            }`}>
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${isLight
+                                    ? "bg-violet-100"
+                                    : "bg-gradient-to-br from-violet-500/20 to-purple-500/20"
+                                }`}>
+                                <benefit.icon className={`w-5 h-5 ${isLight ? "text-violet-600" : "text-violet-400"}`} />
                             </div>
-                            <h4 className="font-semibold text-white text-sm mb-1">{benefit.title}</h4>
-                            <p className="text-xs text-slate-400">{benefit.desc}</p>
+                            <h4 className={`font-semibold text-sm mb-1 ${isLight ? "text-gray-900" : "text-white"}`}>{benefit.title}</h4>
+                            <p className={`text-xs ${isLight ? "text-gray-600" : "text-slate-400"}`}>{benefit.desc}</p>
                         </div>
                     ))}
                 </div>
             </div>
 
             {/* Trust Badges */}
-            <div className="flex flex-wrap justify-center gap-4 pt-3 border-t border-white/5 text-xs text-slate-500">
+            <div className={`flex flex-wrap justify-center gap-4 pt-3 border-t text-xs ${isLight ? "border-gray-200 text-gray-500" : "border-white/5 text-slate-500"
+                }`}>
                 <span className="flex items-center gap-1">
                     <CheckCircle className="w-3 h-3 text-emerald-500" />
                     Free Forever
@@ -232,13 +256,17 @@ export function SupportPage({ onBack }) {
             </div>
 
             {/* Thank You */}
-            <div className="text-center p-5 rounded-xl bg-gradient-to-br from-violet-900/30 to-purple-900/20 border border-violet-500/20">
+            <div className={`text-center p-5 rounded-xl ${isLight
+                    ? "bg-gradient-to-br from-violet-100 to-purple-50 border border-violet-200"
+                    : "bg-gradient-to-br from-violet-900/30 to-purple-900/20 border border-violet-500/20"
+                }`}>
                 <Sparkles className="w-6 h-6 text-amber-400 mx-auto mb-2" />
-                <h3 className="text-lg font-semibold text-white mb-1">Thank You!</h3>
-                <p className="text-sm text-slate-400">
+                <h3 className={`text-lg font-semibold mb-1 ${isLight ? "text-gray-900" : "text-white"}`}>Thank You!</h3>
+                <p className={`text-sm ${isLight ? "text-gray-600" : "text-slate-400"}`}>
                     Your support means the world to us! Every contribution helps keep NotesForge free for students worldwide.
                 </p>
             </div>
         </div>
     );
 }
+

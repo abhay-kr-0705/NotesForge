@@ -13,6 +13,7 @@
     "@tensorflow-models/body-pix": "^2.2.1",
     "@tensorflow/tfjs": "^4.22.0",
     "clsx": "^2.1.0",
+    "firebase": "^12.8.0",
     "framer-motion": "^11.0.3",
     "jszip": "^3.10.1",
     "lucide-react": "^0.344.0",

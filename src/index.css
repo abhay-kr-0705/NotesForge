@@ -2,13 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme CSS Variables */
+:root {
+  /* Dark mode (default) */
+  --bg-primary: #020617;
+  --bg-surface: #0f172a;
+  --bg-surface-highlight: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+html.light-mode {
+  /* Light mode - Professional UI */
+  --bg-primary: #ffffff;
+  --bg-surface: #f8fafc;
+  --bg-surface-highlight: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
-  body {
+  /* Dark mode body (default) */
+  html.dark-mode body,
+  html:not(.light-mode) body {
     @apply antialiased text-gray-100 bg-slate-950;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Light mode body */
+  html.light-mode body {
+    @apply antialiased text-slate-900 bg-white;
     font-family: 'Inter', sans-serif;
   }
 }

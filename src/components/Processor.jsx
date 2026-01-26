@@ -20,8 +20,11 @@ import { loadImageToCanvas, applyImageFilters, generatePdfFromImages } from '../
 import { removeTeacher } from '../lib/teacherRemoval';
 import { extractPptxSlides } from '../lib/pptxUtils';
 import { Loader2, ArrowLeft, FileText, X, Plus, ChevronRight, Lightbulb, CheckCircle2, Hammer, Image, UserX } from 'lucide-react';
+import { useTheme } from '../lib/ThemeContext';
+import { trackEvent } from '../lib/firebase';
 
 export function Processor({ currentPage, onNavigate }) {
+    const { isLight } = useTheme();
     const [step, setStep] = useState('home');
     const [uploadMode, setUploadMode] = useState('pdf'); // 'pdf', 'images', or 'pptx'
     const [files, setFiles] = useState([]); // Multi-file support
@@ -71,6 +74,11 @@ export function Processor({ currentPage, onNavigate }) {
 
         setLoading(true);
         setStatus('Loading PDF...');
+
+        // Track Upload
+        if (selectedFile) {
+            trackEvent('file_upload', { file_type: 'pdf', file_size: selectedFile.size });
+        }
 
         try {
             const pdf = await loadPdf(selectedFile);
@@ -374,6 +382,12 @@ export function Processor({ currentPage, onNavigate }) {
         setProcessing(true);
         setStep('processing');
 
+        // Track Process Start
+        trackEvent('process_start', {
+            pages: selectedPages.length,
+            layout: `${settings.rows}x${settings.cols}`
+        });
+
         try {
             const processedImages = [];
             // Use 'pages' array to determine order, but filter by selection
@@ -469,6 +483,13 @@ export function Processor({ currentPage, onNavigate }) {
 
     const handleDownload = () => {
         if (!processedPdfBlob) return;
+
+        // Track Download
+        trackEvent('download_pdf', {
+            size: processedPdfBlob.size,
+            layout: `${settings.rows}x${settings.cols}`
+        });
+
         const link = document.createElement('a');
         link.href = URL.createObjectURL(processedPdfBlob);
         link.download = `NotesForge_${settings.rows}x${settings.cols}.pdf`;
@@ -613,21 +634,24 @@ export function Processor({ currentPage, onNavigate }) {
 
                 <button
                     onClick={() => { setStep('home'); onNavigate('home'); }}
-                    className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+                    className={`flex items-center gap-2 transition-colors ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}
                 >
                     <ArrowLeft className="w-4 h-4" />
                     Back to Home
                 </button>
 
                 {/* Pro Tip */}
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                <div className={`flex items-start gap-3 p-4 rounded-xl border ${isLight
+                    ? "bg-blue-50 border-blue-200"
+                    : "bg-blue-500/10 border-blue-500/20"
+                    }`}>
                     <div className="p-1.5 rounded-full bg-amber-500">
                         <Lightbulb className="w-4 h-4 text-slate-900" />
                     </div>
                     <div>
-                        <span className="text-amber-400 font-medium">Pro Tip for Best Experience</span>
-                        <p className="text-slate-400 text-sm mt-1">
-                            For smooth and fast processing, make sure to <span className="text-white">close unnecessary browser tabs</span> and give your device enough breathing room. This helps us work our magic faster!
+                        <span className="text-amber-500 font-medium">Pro Tip for Best Experience</span>
+                        <p className={`text-sm mt-1 ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+                            For smooth and fast processing, make sure to <span className={isLight ? "text-slate-900 font-medium" : "text-white"}>close unnecessary browser tabs</span> and give your device enough breathing room. This helps us work our magic faster!
                         </p>
                     </div>
                 </div>
@@ -658,24 +682,30 @@ export function Processor({ currentPage, onNavigate }) {
 
                 {/* Selected Files List */}
                 {files.length > 0 && !loading && (
-                    <div className="p-6 rounded-xl bg-slate-900/50 border border-white/5 space-y-4">
-                        <h3 className="text-lg font-semibold text-white">Selected PDFs ({files.length})</h3>
+                    <div className={`p-6 rounded-xl border space-y-4 ${isLight
+                        ? "bg-slate-50 border-slate-200"
+                        : "bg-slate-900/50 border-white/5"
+                        }`}>
+                        <h3 className={`text-lg font-semibold ${isLight ? "text-slate-900" : "text-white"}`}>Selected PDFs ({files.length})</h3>
 
                         <div className="space-y-2 max-h-60 overflow-y-auto scrollbar-thin">
                             {files.map((file, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 border border-slate-700 group hover:border-slate-600 transition-colors"
+                                    className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isLight
+                                        ? "bg-white border-slate-200 hover:border-slate-300"
+                                        : "bg-slate-800/50 border-slate-700 hover:border-slate-600"
+                                        }`}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 rounded-lg bg-violet-500/20">
-                                            <FileText className="w-4 h-4 text-violet-400" />
+                                        <div className={`p-2 rounded-lg ${isLight ? "bg-violet-100" : "bg-violet-500/20"}`}>
+                                            <FileText className={`w-4 h-4 ${isLight ? "text-violet-600" : "text-violet-400"}`} />
                                         </div>
                                         <div>
-                                            <span className="text-white text-sm">{file.name}</span>
+                                            <span className={`text-sm ${isLight ? "text-slate-900" : "text-white"}`}>{file.name}</span>
                                             <span className="text-xs text-slate-500 ml-2">({(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
                                         </div>
-                                        <span className="text-xs text-emerald-400 flex items-center gap-1">
+                                        <span className={`text-xs flex items-center gap-1 ${isLight ? "text-emerald-600" : "text-emerald-400"}`}>
                                             <CheckCircle2 className="w-3 h-3" />
                                             {pages.filter(p => p.fileIndex === index).length} pages
                                         </span>
@@ -691,11 +721,11 @@ export function Processor({ currentPage, onNavigate }) {
                         </div>
 
                         {/* Summary */}
-                        <div className="flex items-center justify-between pt-4 border-t border-white/5 text-sm">
+                        <div className={`flex items-center justify-between pt-4 border-t text-sm ${isLight ? "border-slate-200" : "border-white/5"}`}>
                             <span className="text-slate-400">
-                                Total: <span className="text-white">{files.length} PDF{files.length > 1 ? 's' : ''}</span> •
-                                <span className="text-white ml-1">{pages.length} pages</span> •
-                                <span className="text-white ml-1">{(getTotalSize() / (1024 * 1024)).toFixed(2)} MB</span>
+                                Total: <span className={isLight ? "text-slate-900" : "text-white"}>{files.length} PDF{files.length > 1 ? 's' : ''}</span> •
+                                <span className={`ml-1 ${isLight ? "text-slate-900" : "text-white"}`}>{pages.length} pages</span> •
+                                <span className={`ml-1 ${isLight ? "text-slate-900" : "text-white"}`}>{(getTotalSize() / (1024 * 1024)).toFixed(2)} MB</span>
                             </span>
                         </div>
 
@@ -723,10 +753,13 @@ export function Processor({ currentPage, onNavigate }) {
 
                 {/* Selected Images List */}
                 {images.length > 0 && !loading && (
-                    <div className="p-6 rounded-xl bg-slate-900/50 border border-emerald-500/20 space-y-4">
+                    <div className={`p-6 rounded-xl border space-y-4 ${isLight
+                        ? "bg-slate-50 border-emerald-200"
+                        : "bg-slate-900/50 border-emerald-500/20"
+                        }`}>
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                                <Image className="w-5 h-5 text-emerald-400" />
+                            <h3 className={`text-lg font-semibold flex items-center gap-2 ${isLight ? "text-slate-900" : "text-white"}`}>
+                                <Image className={`w-5 h-5 ${isLight ? "text-emerald-600" : "text-emerald-400"}`} />
                                 Uploaded Images ({images.length})
                             </h3>
                             <span className="text-xs text-slate-500">

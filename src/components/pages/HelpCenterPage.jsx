@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { ArrowLeft, HelpCircle, FileText, Printer, Settings, Shield, ChevronDown, ChevronUp, Search, Sparkles, Upload, Edit, Download, Zap, MessageCircle } from 'lucide-react';
+import { useTheme } from '../../lib/ThemeContext';
 
 export function HelpCenterPage({ onBack }) {
+    const { isLight } = useTheme();
     const [searchQuery, setSearchQuery] = useState('');
     const [openCategory, setOpenCategory] = useState('getting-started');
     const [openFaq, setOpenFaq] = useState(null);
@@ -138,124 +140,146 @@ export function HelpCenterPage({ onBack }) {
     })).filter(cat => cat.faqs.length > 0 || !searchQuery);
 
     return (
-        <div className="max-w-4xl mx-auto py-6 space-y-8">
-            {/* Back Button */}
-            <button
-                onClick={onBack}
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm"
-            >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Home
-            </button>
-
-            {/* Hero */}
-            <div className="text-center space-y-3">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs">
-                    <HelpCircle className="w-3 h-3" />
-                    <span>Help Center</span>
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white">
-                    How Can We{' '}
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-emerald-400">
-                        Help You?
-                    </span>
-                </h1>
-                <p className="text-sm text-slate-400 max-w-md mx-auto">
-                    Find answers to common questions about NotesForge
-                </p>
-
-                {/* Search */}
-                <div className="relative max-w-md mx-auto">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                    <input
-                        type="text"
-                        placeholder="Search for help..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-sm placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
-                    />
-                </div>
-            </div>
-
-            {/* Quick Category Tabs */}
-            <div className="flex flex-wrap justify-center gap-2">
-                {categories.map((cat) => {
-                    const colors = colorClasses[cat.color];
-                    return (
-                        <button
-                            key={cat.id}
-                            onClick={() => setOpenCategory(cat.id)}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all ${openCategory === cat.id
-                                    ? `${colors.bg} ${colors.text} ${colors.border} border`
-                                    : 'bg-slate-900/50 text-slate-400 border border-white/5 hover:border-white/10'
-                                }`}
-                        >
-                            <cat.icon className="w-3 h-3" />
-                            {cat.title}
-                        </button>
-                    );
-                })}
-            </div>
-
-            {/* FAQ Content */}
-            <div className="space-y-4">
-                {filteredCategories.map((category) => {
-                    const colors = colorClasses[category.color];
-                    const isOpen = openCategory === category.id || searchQuery;
-
-                    if (!isOpen && !searchQuery) return null;
-
-                    return (
-                        <div key={category.id} className="space-y-2">
-                            <h2 className={`text-sm font-medium ${colors.text} flex items-center gap-2`}>
-                                <category.icon className="w-4 h-4" />
-                                {category.title}
-                            </h2>
-
-                            <div className="space-y-1">
-                                {category.faqs.map((faq, index) => {
-                                    const faqId = `${category.id}-${index}`;
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="rounded-lg bg-slate-900/50 border border-white/5 overflow-hidden"
-                                        >
-                                            <button
-                                                onClick={() => setOpenFaq(openFaq === faqId ? null : faqId)}
-                                                className="w-full flex items-center justify-between p-3 text-left"
-                                            >
-                                                <span className="text-sm text-white">{faq.q}</span>
-                                                {openFaq === faqId ? (
-                                                    <ChevronUp className="w-4 h-4 text-cyan-400 flex-shrink-0" />
-                                                ) : (
-                                                    <ChevronDown className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                                                )}
-                                            </button>
-                                            {openFaq === faqId && (
-                                                <div className="px-3 pb-3">
-                                                    <p className="text-xs text-slate-400 leading-relaxed">{faq.a}</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Still Need Help */}
-            <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-900/20 to-emerald-900/10 border border-cyan-500/20 text-center">
-                <MessageCircle className="w-6 h-6 text-cyan-400 mx-auto mb-2" />
-                <h3 className="text-base font-semibold text-white mb-1">Still Need Help?</h3>
-                <p className="text-xs text-slate-400 mb-3">Can't find what you're looking for?</p>
-                <a
-                    href="mailto:abhayk7481@gmail.com"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-600 text-white text-sm font-medium hover:bg-cyan-500 transition-colors"
+        <div className={`min-h-screen ${isLight ? "bg-white" : ""}`}>
+            <div className="max-w-4xl mx-auto py-6 space-y-8 px-4">
+                {/* Back Button */}
+                <button
+                    onClick={onBack}
+                    className={`flex items-center gap-2 transition-colors text-sm ${isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"}`}
                 >
-                    Contact Support
-                </a>
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Home
+                </button>
+
+                {/* Hero */}
+                <div className="text-center space-y-3">
+                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs ${isLight
+                            ? "bg-cyan-50 border border-cyan-200 text-cyan-700 font-medium"
+                            : "bg-cyan-500/10 border border-cyan-500/20 text-cyan-400"
+                        }`}>
+                        <HelpCircle className="w-3 h-3" />
+                        <span>Help Center</span>
+                    </div>
+                    <h1 className={`text-2xl md:text-3xl font-bold ${isLight ? "text-slate-900" : "text-white"}`}>
+                        How Can We{' '}
+                        <span className={`bg-clip-text text-transparent ${isLight
+                                ? "bg-gradient-to-r from-cyan-600 to-cyan-500 text-cyan-600"
+                                : "bg-gradient-to-r from-cyan-400 to-emerald-400"
+                            }`}>
+                            Help You?
+                        </span>
+                    </h1>
+                    <p className={`text-sm max-w-md mx-auto ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+                        Find answers to common questions about NotesForge
+                    </p>
+
+                    {/* Search */}
+                    <div className="relative max-w-md mx-auto">
+                        <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${isLight ? "text-slate-400" : "text-slate-500"}`} />
+                        <input
+                            type="text"
+                            placeholder="Search for help..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className={`w-full pl-10 pr-4 py-2.5 rounded-lg text-sm focus:outline-none transition-all ${isLight
+                                    ? "bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:border-cyan-500 shadow-sm"
+                                    : "bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:border-cyan-500"
+                                }`}
+                        />
+                    </div>
+                </div>
+
+                {/* Quick Category Tabs */}
+                <div className="flex flex-wrap justify-center gap-2">
+                    {categories.map((cat) => {
+                        const colors = colorClasses[cat.color];
+                        return (
+                            <button
+                                key={cat.id}
+                                onClick={() => setOpenCategory(cat.id)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all ${openCategory === cat.id
+                                    ? `${colors.bg} ${colors.text} ${colors.border} border font-medium`
+                                    : isLight
+                                        ? 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300 shadow-sm'
+                                        : 'bg-slate-900/50 text-slate-400 border border-white/5 hover:border-white/10'
+                                    }`}
+                            >
+                                <cat.icon className="w-3 h-3" />
+                                {cat.title}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* FAQ Content */}
+                <div className="space-y-4">
+                    {filteredCategories.map((category) => {
+                        const colors = colorClasses[category.color];
+                        const isOpen = openCategory === category.id || searchQuery;
+
+                        if (!isOpen && !searchQuery) return null;
+
+                        return (
+                            <div key={category.id} className="space-y-2">
+                                <h2 className={`text-sm font-medium flex items-center gap-2 ${colors.text}`}>
+                                    <category.icon className="w-4 h-4" />
+                                    {category.title}
+                                </h2>
+
+                                <div className="space-y-1">
+                                    {category.faqs.map((faq, index) => {
+                                        const faqId = `${category.id}-${index}`;
+                                        return (
+                                            <div
+                                                key={index}
+                                                className={`rounded-lg overflow-hidden transition-all ${isLight
+                                                        ? "bg-white border border-slate-200 shadow-sm hover:border-cyan-300"
+                                                        : "bg-slate-900/50 border border-white/5"
+                                                    }`}
+                                            >
+                                                <button
+                                                    onClick={() => setOpenFaq(openFaq === faqId ? null : faqId)}
+                                                    className="w-full flex items-center justify-between p-3 text-left"
+                                                >
+                                                    <span className={`text-sm ${isLight ? "text-slate-800" : "text-white"}`}>{faq.q}</span>
+                                                    {openFaq === faqId ? (
+                                                        <ChevronUp className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                                                    ) : (
+                                                        <ChevronDown className={`w-4 h-4 flex-shrink-0 ${isLight ? "text-slate-400" : "text-slate-500"}`} />
+                                                    )}
+                                                </button>
+                                                {openFaq === faqId && (
+                                                    <div className="px-3 pb-3">
+                                                        <p className={`text-xs leading-relaxed ${isLight ? "text-slate-600" : "text-slate-400"}`}>{faq.a}</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Still Need Help */}
+                <div className={`p-6 rounded-xl text-center border ${isLight
+                        ? "bg-cyan-50 border-cyan-100"
+                        : "bg-gradient-to-br from-cyan-900/20 to-emerald-900/10 border-cyan-500/20"
+                    }`}>
+                    <MessageCircle className={`w-6 h-6 mx-auto mb-2 ${isLight ? "text-cyan-600" : "text-cyan-400"}`} />
+                    <h3 className={`text-base font-semibold mb-1 ${isLight ? "text-slate-900" : "text-white"}`}>Still Need Help?</h3>
+                    <p className={`text-xs mb-3 ${isLight ? "text-slate-600" : "text-slate-400"}`}>Can't find what you're looking for?</p>
+                    <a
+                        href="mailto:abhayk7481@gmail.com"
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isLight
+                                ? "bg-cyan-600 text-white hover:bg-cyan-700 shadow-sm"
+                                : "bg-cyan-600 text-white hover:bg-cyan-500"
+                            }`}
+                    >
+                        Contact Support
+                    </a>
+                </div>
             </div>
         </div>
     );

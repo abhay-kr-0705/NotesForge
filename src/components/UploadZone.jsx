@@ -2,9 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { UploadCloud, FileText, Image, Presentation } from 'lucide-react';
 import { cn } from '../lib/cn';
+import { useTheme } from '../lib/ThemeContext';
 
 export function UploadZone({ onFileSelect, onImagesSelect, onPptxSelect }) {
     const [mode, setMode] = useState('pdf'); // 'pdf', 'images', or 'pptx'
+    const { isLight } = useTheme();
 
     const onDropPdf = useCallback((acceptedFiles) => {
         if (acceptedFiles?.length > 0) {
@@ -94,14 +96,15 @@ export function UploadZone({ onFileSelect, onImagesSelect, onPptxSelect }) {
     return (
         <div className="space-y-4">
             {/* Mode Toggle */}
-            <div className="flex items-center justify-center gap-1 p-1 bg-slate-800/50 rounded-full max-w-md mx-auto border border-white/5">
+            <div className={`flex items-center justify-center gap-1 p-1 rounded-full max-w-md mx-auto border transition-colors ${isLight ? "bg-slate-100 border-slate-200" : "bg-slate-800/50 border-white/5"
+                }`}>
                 <button
                     onClick={() => setMode('pdf')}
                     className={cn(
                         "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all",
                         mode === 'pdf'
                             ? "bg-gradient-to-r from-blue-500 to-violet-500 text-white shadow-lg"
-                            : "text-slate-400 hover:text-white"
+                            : isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"
                     )}
                 >
                     <FileText className="w-4 h-4" />
@@ -113,7 +116,7 @@ export function UploadZone({ onFileSelect, onImagesSelect, onPptxSelect }) {
                         "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all",
                         mode === 'pptx'
                             ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg"
-                            : "text-slate-400 hover:text-white"
+                            : isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"
                     )}
                 >
                     <Presentation className="w-4 h-4" />
@@ -125,7 +128,7 @@ export function UploadZone({ onFileSelect, onImagesSelect, onPptxSelect }) {
                         "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all",
                         mode === 'images'
                             ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg"
-                            : "text-slate-400 hover:text-white"
+                            : isLight ? "text-slate-500 hover:text-slate-900" : "text-slate-400 hover:text-white"
                     )}
                 >
                     <Image className="w-4 h-4" />
@@ -137,10 +140,13 @@ export function UploadZone({ onFileSelect, onImagesSelect, onPptxSelect }) {
             <div
                 {...getRootProps()}
                 className={cn(
-                    "relative group cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-slate-700 bg-surface/50 p-12 text-center transition-all duration-300 hover:border-primary/50 hover:bg-surfaceHighlight/50",
-                    isDragActive && "border-primary bg-primary/10 ring-4 ring-primary/20 scale-[1.02]",
-                    mode === 'images' && "border-emerald-700 hover:border-emerald-500/50",
-                    mode === 'pptx' && "border-orange-700 hover:border-orange-500/50"
+                    "relative group cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed p-12 text-center transition-all duration-300",
+                    isLight
+                        ? "bg-white border-slate-300 hover:border-slate-400 hover:bg-slate-50"
+                        : "bg-surface/50 border-slate-700 hover:bg-surfaceHighlight/50 hover:border-primary/50",
+                    isDragActive && (isLight ? "border-violet-500 bg-violet-50 ring-4 ring-violet-100" : "border-primary bg-primary/10 ring-4 ring-primary/20 scale-[1.02]"),
+                    mode === 'images' && (isLight ? "hover:border-emerald-400" : "border-emerald-700 hover:border-emerald-500/50"),
+                    mode === 'pptx' && (isLight ? "hover:border-orange-400" : "border-orange-700 hover:border-orange-500/50")
                 )}
             >
                 <input {...getInputProps()} />
@@ -148,34 +154,37 @@ export function UploadZone({ onFileSelect, onImagesSelect, onPptxSelect }) {
                 <div className="relative z-10 flex flex-col items-center gap-4">
                     <div className={cn(
                         "flex h-20 w-20 items-center justify-center rounded-full shadow-xl transition-all duration-500 group-hover:scale-110",
-                        mode === 'pdf' && "bg-slate-800 group-hover:bg-violet-500",
-                        mode === 'images' && "bg-slate-800 group-hover:bg-emerald-500",
-                        mode === 'pptx' && "bg-slate-800 group-hover:bg-orange-500",
-                        isDragActive && mode === 'pdf' && "scale-110 bg-violet-500",
-                        isDragActive && mode === 'images' && "scale-110 bg-emerald-500",
-                        isDragActive && mode === 'pptx' && "scale-110 bg-orange-500"
+                        isLight
+                            ? "bg-slate-100 text-slate-500"
+                            : "bg-slate-800 text-slate-400",
+                        mode === 'pdf' && (isLight ? "group-hover:bg-violet-100 group-hover:text-violet-600" : "group-hover:bg-violet-500 group-hover:text-white"),
+                        mode === 'images' && (isLight ? "group-hover:bg-emerald-100 group-hover:text-emerald-600" : "group-hover:bg-emerald-500 group-hover:text-white"),
+                        mode === 'pptx' && (isLight ? "group-hover:bg-orange-100 group-hover:text-orange-600" : "group-hover:bg-orange-500 group-hover:text-white"),
+                        isDragActive && mode === 'pdf' && "scale-110 bg-violet-500 text-white",
+                        isDragActive && mode === 'images' && "scale-110 bg-emerald-500 text-white",
+                        isDragActive && mode === 'pptx' && "scale-110 bg-orange-500 text-white"
                     )}>
                         {isDragActive ? (
-                            <UploadCloud className="h-10 w-10 text-white animate-bounce" />
+                            <UploadCloud className="h-10 w-10 animate-bounce" />
                         ) : (
-                            <IconComponent className="h-10 w-10 text-slate-400 group-hover:text-white" />
+                            <IconComponent className="h-10 w-10" />
                         )}
                     </div>
 
                     <div className="space-y-2">
-                        <h3 className="text-2xl font-bold text-white">
+                        <h3 className={`text-2xl font-bold ${isLight ? "text-slate-900" : "text-white"}`}>
                             {config.title}
                         </h3>
-                        <p className="text-slate-400 max-w-sm mx-auto">
+                        <p className={`max-w-sm mx-auto ${isLight ? "text-slate-600" : "text-slate-400"}`}>
                             {config.description}
                         </p>
                     </div>
 
                     <div className={cn(
                         "mt-4 rounded-full px-4 py-1.5 text-xs font-medium border",
-                        mode === 'pdf' && "bg-slate-800 text-slate-400 border-slate-700 group-hover:border-violet-500/50",
-                        mode === 'images' && "bg-slate-800 text-slate-400 border-slate-700 group-hover:border-emerald-500/50",
-                        mode === 'pptx' && "bg-slate-800 text-slate-400 border-slate-700 group-hover:border-orange-500/50"
+                        mode === 'pdf' && (isLight ? "bg-slate-100 text-slate-500 border-slate-200" : "bg-slate-800 text-slate-400 border-slate-700"),
+                        mode === 'images' && (isLight ? "bg-slate-100 text-slate-500 border-slate-200" : "bg-slate-800 text-slate-400 border-slate-700"),
+                        mode === 'pptx' && (isLight ? "bg-slate-100 text-slate-500 border-slate-200" : "bg-slate-800 text-slate-400 border-slate-700")
                     )}>
                         {config.support}
                     </div>
