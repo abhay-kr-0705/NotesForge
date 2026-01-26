@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Users, Clock, Activity, Lock, RefreshCw } from 'lucide-react';
+import { Shield, Users, Clock, Activity, Lock, RefreshCw, FileText } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { collection, query, orderBy, limit, getDocs, where, Timestamp } from 'firebase/firestore';
 import { useTheme } from '../../lib/ThemeContext';
@@ -162,8 +162,8 @@ export function AdminDashboard({ onBack }) {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             className={`w-full px-4 py-3 rounded-xl border text-center tracking-widest ${isLight
-                                    ? "bg-slate-50 border-slate-200 text-slate-900 focus:border-violet-500"
-                                    : "bg-slate-800 border-slate-700 text-white focus:border-violet-500"
+                                ? "bg-slate-50 border-slate-200 text-slate-900 focus:border-violet-500"
+                                : "bg-slate-800 border-slate-700 text-white focus:border-violet-500"
                                 }`}
                         />
                         <button
