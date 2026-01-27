@@ -6,9 +6,14 @@ import { PDFDocument, rgb } from 'pdf-lib';
 // Handle potential ESM/CJS interop issues
 const pdfjs = pdfjsLib.default ? pdfjsLib.default : pdfjsLib;
 
-// Use CDN for worker to prevent version mismatches (e.g. API 4.x vs Worker 3.x)
-// This ensures the worker script always matches the loaded API version
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Use CDN for worker to prevent version mismatches
+// Version 4.x requires .mjs extension for the worker
+if (pdfjs.version.startsWith('4.')) {
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+} else {
+    // Fallback for v3.x and below
+    pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+}
 
 export async function loadPdf(file) {
     try {
