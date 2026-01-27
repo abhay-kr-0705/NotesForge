@@ -10,7 +10,7 @@ export function BlogPage({ onBack }) {
             icon: Cpu,
             color: "violet",
             content: (
-                <div className="space-y-4 text-slate-300">
+                <div className={`space-y-4 ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                     <p>
                         NotesForge is built on a modern, client-side architecture that prioritizes privacy and performance.
                         Unlike traditional PDF tools that upload your files to a server, we use <strong className={isLight ? "text-violet-700" : ""}>WebAssembly (WASM)</strong>
@@ -43,7 +43,7 @@ export function BlogPage({ onBack }) {
             icon: Zap,
             color: "amber",
             content: (
-                <div className="space-y-4 text-slate-300">
+                <div className={`space-y-4 ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                     <p>
                         Many lecture slides use "Dark Mode" (dark background, light text) which looks great on screens but is terrible for printing.
                         It wastes ink and makes pages soggy and unreadable.
@@ -68,7 +68,7 @@ export function BlogPage({ onBack }) {
             icon: Heart,
             color: "red",
             content: (
-                <div className="space-y-4 text-slate-300">
+                <div className={`space-y-4 ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                     <p>
                         Yes, NotesForge is 100% free. No hidden subscriptions, no "Pro" plans, no watermarks.
                     </p>
@@ -92,7 +92,7 @@ export function BlogPage({ onBack }) {
             icon: UserX,
             color: "blue",
             content: (
-                <div className="space-y-4 text-slate-300">
+                <div className={`space-y-4 ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                     <p>
                         Simple: <strong>We don't want your data.</strong>
                     </p>
@@ -111,7 +111,7 @@ export function BlogPage({ onBack }) {
             icon: Printer,
             color: "emerald",
             content: (
-                <div className="space-y-4 text-slate-300">
+                <div className={`space-y-4 ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                     <ul className="list-disc pl-5 space-y-2">
                         <li>
                             <strong className="text-emerald-400">Use Grid Layout:</strong> Printing 1 slide per page is a waste. Use our 4-slide or 6-slide grid options to save paper.
@@ -131,7 +131,7 @@ export function BlogPage({ onBack }) {
             icon: Smartphone,
             color: "pink",
             content: (
-                <div className="space-y-4 text-slate-300">
+                <div className={`space-y-4 ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                     <p>
                         Absolutely! NotesForge is fully responsive and works great on mobile browsers (Chrome, Safari, Firefox).
                     </p>
@@ -147,7 +147,7 @@ export function BlogPage({ onBack }) {
             icon: WifiOff,
             color: "slate",
             content: (
-                <div className="space-y-4 text-slate-300">
+                <div className={`space-y-4 ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                     <p>
                         You only need internet to load the website initially. Once loaded, NotesForge works <strong>offline</strong> thanks to Service Worker technology.
                     </p>
@@ -162,7 +162,7 @@ export function BlogPage({ onBack }) {
             icon: Layers,
             color: "indigo",
             content: (
-                <div className="space-y-4 text-slate-300">
+                <div className={`space-y-4 ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                     <p>
                         We don't enforce a hard limit like "10MB max". You can process files as large as your device's memory can handle.
                     </p>
@@ -191,8 +191,8 @@ export function BlogPage({ onBack }) {
             {/* Hero */}
             <div className={`text-center space-y-4 ${isLight ? "mt-4" : ""}`}>
                 <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs ${isLight
-                        ? "bg-slate-100 border border-slate-200 text-slate-600 font-medium"
-                        : "bg-violet-500/10 border border-violet-500/20 text-violet-400"
+                    ? "bg-slate-100 border border-slate-200 text-slate-600 font-medium"
+                    : "bg-violet-500/10 border border-violet-500/20 text-violet-400"
                     }`}>
                     <BookOpen className="w-3 h-3" />
                     <span>Knowledge Base</span>
@@ -200,8 +200,8 @@ export function BlogPage({ onBack }) {
                 <h1 className={`text-3xl md:text-4xl font-bold ${isLight ? "text-slate-900 tracking-tight" : "text-white"}`}>
                     NotesForge{' '}
                     <span className={`bg-clip-text text-transparent ${isLight
-                            ? "bg-gradient-to-r from-violet-600 to-cyan-600 text-violet-700"
-                            : "bg-gradient-to-r from-violet-400 to-cyan-400"
+                        ? "bg-gradient-to-r from-violet-600 to-cyan-600 text-violet-700"
+                        : "bg-gradient-to-r from-violet-400 to-cyan-400"
                         }`}>
                         Inside Out
                     </span>
@@ -223,13 +223,13 @@ export function BlogPage({ onBack }) {
             <div className="grid gap-8">
                 {articles.map((article, index) => (
                     <article key={index} className={`p-6 rounded-2xl transition-all ${isLight
-                            ? "bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300"
-                            : "bg-slate-900/50 border border-white/5 hover:border-violet-500/20 hover:bg-slate-900/80"
+                        ? "bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300"
+                        : "bg-slate-900/50 border border-white/5 hover:border-violet-500/20 hover:bg-slate-900/80"
                         }`}>
                         <div className="flex items-start gap-4">
                             <div className={`p-3 rounded-xl flex-shrink-0 ${isLight
-                                    ? `bg-${article.color}-50 border border-${article.color}-100`
-                                    : `bg-${article.color}-500/10 border border-${article.color}-500/20`
+                                ? `bg-${article.color}-50 border border-${article.color}-100`
+                                : `bg-${article.color}-500/10 border border-${article.color}-500/20`
                                 }`}>
                                 <article.icon className={`w-6 h-6 ${isLight ? `text-${article.color}-600` : `text-${article.color}-400`}`} />
                             </div>
@@ -248,8 +248,8 @@ export function BlogPage({ onBack }) {
 
             {/* Footer Note */}
             <div className={`text-center p-8 rounded-2xl ${isLight
-                    ? "bg-slate-100 border border-slate-200"
-                    : "bg-gradient-to-br from-violet-900/20 to-cyan-900/20 border border-white/5"
+                ? "bg-slate-100 border border-slate-200"
+                : "bg-gradient-to-br from-violet-900/20 to-cyan-900/20 border border-white/5"
                 }`}>
                 <Brain className={`w-8 h-8 mx-auto mb-3 ${isLight ? "text-violet-600" : "text-violet-400"}`} />
                 <h3 className={`text-lg font-bold mb-2 ${isLight ? "text-slate-900" : "text-white"}`}>Still have questions?</h3>
@@ -261,8 +261,8 @@ export function BlogPage({ onBack }) {
                     <button
                         onClick={() => window.location.href = 'mailto:abhayk7481@gmail.com'}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isLight
-                                ? "bg-violet-600 hover:bg-violet-700 text-white shadow-sm"
-                                : "bg-violet-600 hover:bg-violet-500 text-white"
+                            ? "bg-violet-600 hover:bg-violet-700 text-white shadow-sm"
+                            : "bg-violet-600 hover:bg-violet-500 text-white"
                             }`}
                     >
                         Email Us

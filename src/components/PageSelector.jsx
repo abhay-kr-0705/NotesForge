@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Pencil, Trash2, RotateCcw } from 'lucide-react';
+import { Check, Pencil, Trash2, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/Button';
 import { PageEditor } from './PageEditor';
 import { cn } from '../lib/cn';
@@ -74,8 +74,8 @@ export function PageSelector({
             <div className="space-y-6">
                 {/* Tip Banner */}
                 <div className={`flex items-start gap-3 p-4 rounded-xl border ${isLight
-                        ? "bg-amber-50 border-amber-200"
-                        : "bg-amber-500/10 border-amber-500/20"
+                    ? "bg-amber-50 border-amber-200"
+                    : "bg-amber-500/10 border-amber-500/20"
                     }`}>
                     <span className="text-xl">💡</span>
                     <div>
@@ -102,7 +102,7 @@ export function PageSelector({
 
                 {/* Page Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 max-h-[50vh] overflow-y-auto p-2 scrollbar-thin">
-                    {pages.map((page) => {
+                    {pages.map((page, index) => {
                         const isSelected = selectedPages.includes(page.id);
                         return (
                             <div
@@ -155,9 +155,35 @@ export function PageSelector({
                                     {page.id}
                                 </div>
 
+                                {/* Reorder Controls (Mobile/Assessment) */}
+                                <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (index > 0) onReorder?.(page.id, pages[index - 1].id);
+                                        }}
+                                        disabled={index === 0}
+                                        className="p-1 rounded-full bg-black/50 text-white hover:bg-violet-500 disabled:opacity-30 disabled:hover:bg-black/50"
+                                        title="Move Backward"
+                                    >
+                                        <ChevronLeft className="w-3 h-3" />
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (index < pages.length - 1) onReorder?.(page.id, pages[index + 1].id);
+                                        }}
+                                        disabled={index === pages.length - 1}
+                                        className="p-1 rounded-full bg-black/50 text-white hover:bg-violet-500 disabled:opacity-30 disabled:hover:bg-black/50"
+                                        title="Move Forward"
+                                    >
+                                        <ChevronRight className="w-3 h-3" />
+                                    </button>
+                                </div>
+
                                 {/* Edited Badge */}
                                 {page.edited && (
-                                    <div className="absolute bottom-2 left-2 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-medium border border-emerald-500/30">
+                                    <div className="absolute bottom-8 left-2 bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-medium border border-emerald-500/30">
                                         Edited
                                     </div>
                                 )}
@@ -168,28 +194,28 @@ export function PageSelector({
 
                 {/* Add More Content Buttons */}
                 <div className={`flex flex-wrap items-center justify-center gap-4 py-4 border-t rounded-xl ${isLight
-                        ? "bg-slate-50 border-slate-200"
-                        : "bg-slate-800/20 border-white/5"
+                    ? "bg-slate-50 border-slate-200"
+                    : "bg-slate-800/20 border-white/5"
                     }`}>
                     <span className="text-sm font-medium text-slate-500 w-full text-center sm:w-auto">Add more:</span>
 
                     <button onClick={onAddPdfs} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border transition-colors ${isLight
-                            ? "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
-                            : "bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border-blue-600/30"
+                        ? "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
+                        : "bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border-blue-600/30"
                         }`}>
                         <FileText className="w-4 h-4" /> PDF
                     </button>
 
                     <button onClick={onAddPptx} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border transition-colors ${isLight
-                            ? "bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100"
-                            : "bg-orange-600/20 text-orange-400 hover:bg-orange-600/30 border-orange-600/30"
+                        ? "bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100"
+                        : "bg-orange-600/20 text-orange-400 hover:bg-orange-600/30 border-orange-600/30"
                         }`}>
                         <Presentation className="w-4 h-4" /> PPT
                     </button>
 
                     <button onClick={onAddImages} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm border transition-colors ${isLight
-                            ? "bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100"
-                            : "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border-emerald-600/30"
+                        ? "bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100"
+                        : "bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border-emerald-600/30"
                         }`}>
                         <Image className="w-4 h-4" /> Images
                     </button>

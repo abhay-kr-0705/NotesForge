@@ -1,15 +1,26 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import { PDFDocument, rgb } from 'pdf-lib';
 
-// For Vite, we need to import the worker differently
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+// Robustly handle the worker import for Vite
+// Using the non-minified version often avoids bundling issues
+// Handle potential ESM/CJS interop issues
+const pdfjs = pdfjsLib.default ? pdfjsLib.default : pdfjsLib;
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+// Use CDN for worker to prevent version mismatches (e.g. API 4.x vs Worker 3.x)
+// This ensures the worker script always matches the loaded API version
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 export async function loadPdf(file) {
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-    return pdf;
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        // Use the resolved 'pdfjs' object
+        const loadingTask = pdfjs.getDocument(arrayBuffer);
+        const pdf = await loadingTask.promise;
+        return pdf;
+    } catch (error) {
+        console.error("Error loading PDF:", error);
+        throw new Error("Failed to parse PDF file. " + error.message);
+    }
 }
 
 export async function renderPageToImage(pdf, pageNum, scale = 1.5) {

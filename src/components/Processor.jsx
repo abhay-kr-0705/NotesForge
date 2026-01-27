@@ -83,13 +83,13 @@ export function Processor({ currentPage, onNavigate }) {
         try {
             const pdf = await loadPdf(selectedFile);
             const numPages = pdf.numPages;
-            const newPages = [...pages];
+            const addedPages = [];
             const startId = pages.length;
 
             for (let i = 1; i <= numPages; i++) {
                 setStatus(`Rendering page ${i} of ${numPages}...`);
                 const canvas = await renderPageToImage(pdf, i, 0.5);
-                newPages.push({
+                addedPages.push({
                     id: startId + i,
                     pageNum: i,
                     fileIndex: newFiles.length - 1,
@@ -98,15 +98,20 @@ export function Processor({ currentPage, onNavigate }) {
                     edited: false,
                 });
             }
-            setPages(newPages);
-            setSelectedPages(newPages.map(p => p.id));
+
+            const updatedPages = [...pages, ...addedPages];
+            setPages(updatedPages);
 
             // Stay on current step if selecting/editing
             if (step === 'home') {
                 setStep('upload');
+                setSelectedPages(updatedPages.map(p => p.id));
             } else if (step === 'select') {
-                // Refresh selection to include new pages
-                setSelectedPages([...selectedPages, ...newPages.map(p => p.id)]);
+                // Refresh selection to include ONLY new pages appended to existing selection
+                setSelectedPages([...selectedPages, ...addedPages.map(p => p.id)]);
+            } else {
+                // Default: Select all
+                setSelectedPages(updatedPages.map(p => p.id));
             }
         } catch (err) {
             console.error(err);
@@ -254,41 +259,15 @@ export function Processor({ currentPage, onNavigate }) {
         imageInputRef.current?.click();
     };
 
-    const handleImageInputChange = async (e) => {
+    const handleImageInputChange = (e) => {
         const newFiles = Array.from(e.target.files || []);
         if (newFiles.length === 0) return;
 
-        setLoading(true);
-        setStatus('Loading additional images...');
+        // Delegate to the main handler which supports appending logic
+        handleImagesSelect(newFiles);
 
-        try {
-            const loadedImages = [];
-            for (let i = 0; i < newFiles.length; i++) {
-                setStatus(`Loading image ${i + 1} of ${newFiles.length}...`);
-                const imgData = await loadImageToCanvas(newFiles[i]);
-                loadedImages.push({
-                    id: images.length + i + 1,
-                    ...imgData,
-                    selected: true,
-                });
-            }
-            const allImages = [...images, ...loadedImages];
-            setImages(allImages);
-            setPages(allImages.map((img, idx) => ({
-                id: idx + 1,
-                pageNum: idx + 1,
-                thumbnail: img.dataUrl,
-                isImage: true,
-            })));
-            setSelectedPages(allImages.map((_, idx) => idx + 1));
-        } catch (err) {
-            console.error(err);
-            alert('Error loading images.');
-        } finally {
-            setLoading(false);
-            setStatus('');
-            e.target.value = ''; // Reset input
-        }
+        // Reset input
+        e.target.value = '';
     };
 
     const handleRemoveFile = (fileIndex) => {
