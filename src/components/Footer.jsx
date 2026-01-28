@@ -30,8 +30,8 @@ export function Footer({ onNavigate }) {
 
     return (
         <footer className={`mt-auto border-t ${isLight
-                ? "bg-slate-50 border-slate-200"
-                : "bg-slate-950 border-white/5"
+            ? "bg-slate-50 border-slate-200"
+            : "bg-slate-950 border-white/5"
             }`}>
             {/* Main Footer - Single Row */}
             <div className="w-full max-w-7xl mx-auto px-6 py-8">
@@ -41,15 +41,15 @@ export function Footer({ onNavigate }) {
                     <div className="lg:col-span-2 space-y-4">
                         <div className="flex items-center gap-4">
                             <div className={`w-9 h-9 rounded-lg overflow-hidden p-0.5 flex-shrink-0 ${isLight
-                                    ? "bg-white border border-slate-200 shadow-sm"
-                                    : "bg-slate-900 border border-white/10"
+                                ? "bg-white border border-slate-200 shadow-sm"
+                                : "bg-slate-900 border border-white/10"
                                 }`}>
-                                <img src="/Gemini_Generated_Image_6jwaga6jwaga6jwa.png" alt="NotesForge" className="w-full h-full object-cover rounded" />
+                                <img src="/logo-new.jpg" alt="NotesForge" className="w-full h-full object-cover rounded" />
                             </div>
                             <div className="flex flex-col">
                                 <span className={`text-lg font-bold bg-clip-text text-transparent leading-none ${isLight
-                                        ? "bg-gradient-to-r from-slate-700 to-slate-900"
-                                        : "bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400"
+                                    ? "bg-gradient-to-r from-slate-700 to-slate-900"
+                                    : "bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400"
                                     }`}>
                                     NotesForge
                                 </span>
@@ -71,8 +71,8 @@ export function Footer({ onNavigate }) {
                                 <span
                                     key={i}
                                     className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium ${isLight
-                                            ? "bg-white border border-slate-200 text-slate-600 shadow-sm"
-                                            : "bg-slate-900 border border-slate-800 text-slate-300"
+                                        ? "bg-white border border-slate-200 text-slate-600 shadow-sm"
+                                        : "bg-slate-900 border border-slate-800 text-slate-300"
                                         }`}
                                 >
                                     <badge.icon className={`w-3 h-3 ${badge.color === 'emerald' ? 'text-emerald-500' :
@@ -120,8 +120,8 @@ export function Footer({ onNavigate }) {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isLight
-                                            ? "bg-white border border-slate-200 text-slate-500 hover:text-violet-600 hover:border-violet-300 shadow-sm"
-                                            : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-violet-600/20 hover:border-violet-500/30"
+                                        ? "bg-white border border-slate-200 text-slate-500 hover:text-violet-600 hover:border-violet-300 shadow-sm"
+                                        : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-violet-600/20 hover:border-violet-500/30"
                                         }`}
                                     title={link.label}
                                 >

@@ -9,9 +9,9 @@
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "/logo.png",
+            "src": "/logo-new.jpg",
             "sizes": "192x192 512x512",
-            "type": "image/png",
+            "type": "image/jpeg",
             "purpose": "any maskable"
         }
     ],
@@ -29,7 +29,7 @@
             "url": "/?action=upload",
             "icons": [
                 {
-                    "src": "/logo.png",
+                    "src": "/logo-new.jpg",
                     "sizes": "192x192"
                 }
             ]

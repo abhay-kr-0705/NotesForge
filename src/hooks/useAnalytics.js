@@ -3,10 +3,10 @@ import { trackEvent } from '../lib/firebase';
 
 export function useAnalytics(currentPage) {
     useEffect(() => {
-        // Check if user has consented to cookies
+        // Check consent (Soft Opt-in: Track unless explicitly declined)
         const consent = localStorage.getItem('cookie_consent');
 
-        if (consent === 'accepted') {
+        if (consent !== 'declined') {
             // Track Page View
             trackEvent('page_view', {
                 page_path: `/${currentPage}`,
@@ -17,7 +17,7 @@ export function useAnalytics(currentPage) {
 
     const trackCustomEvent = (eventName, params) => {
         const consent = localStorage.getItem('cookie_consent');
-        if (consent === 'accepted') {
+        if (consent !== 'declined') {
             trackEvent(eventName, params);
         }
     };

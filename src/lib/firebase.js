@@ -63,7 +63,11 @@ export const trackEvent = async (eventName, params = {}) => {
                 path: window.location.pathname
             });
         } catch (e) {
-            console.error("Error logging to Firestore:", e);
+            if (e.code === 'permission-denied') {
+                console.warn("Firestore Write Permission Denied. Check Security Rules.");
+            } else {
+                console.error("Error logging to Firestore:", e);
+            }
         }
     }
 };

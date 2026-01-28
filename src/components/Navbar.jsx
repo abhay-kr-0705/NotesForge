@@ -29,12 +29,12 @@ export function Navbar({ currentPage, onNavigate }) {
     return (
         <header
             className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isLight
-                    ? scrolled
-                        ? "bg-white/95 border-b border-slate-200 shadow-sm backdrop-blur-sm"
-                        : "bg-white border-b border-transparent"
-                    : scrolled
-                        ? "bg-slate-950/95 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20"
-                        : "bg-slate-950/95 backdrop-blur-md"
+                ? scrolled
+                    ? "bg-white/95 border-b border-slate-200 shadow-sm backdrop-blur-sm"
+                    : "bg-white border-b border-transparent"
+                : scrolled
+                    ? "bg-slate-950/95 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20"
+                    : "bg-slate-950/95 backdrop-blur-md"
                 }`}
         >
             <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -42,19 +42,19 @@ export function Navbar({ currentPage, onNavigate }) {
                 <button onClick={handleLogoClick} className="flex items-center gap-3 group">
                     <div className="relative">
                         <div className={`absolute inset-0 rounded-xl blur-lg transition-opacity ${isLight
-                                ? "opacity-0" // No glow in light mode
-                                : "bg-gradient-to-r from-blue-500 to-violet-500 opacity-50 group-hover:opacity-80"
+                            ? "opacity-0" // No glow in light mode
+                            : "bg-gradient-to-r from-blue-500 to-violet-500 opacity-50 group-hover:opacity-80"
                             }`} />
                         <img
-                            src="/Gemini_Generated_Image_6jwaga6jwaga6jwa.png"
+                            src="/logo-new.jpg"
                             alt="NotesForge Logo"
                             className={`relative w-10 h-10 rounded-xl object-cover ${isLight ? "shadow-sm border border-slate-200" : ""}`}
                         />
                     </div>
                     <div className="flex flex-col leading-none">
                         <span className={`text-lg font-bold ${isLight
-                                ? "text-slate-900"
-                                : "bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400"
+                            ? "text-slate-900"
+                            : "bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400"
                             }`}>
                             NotesForge
                         </span>
@@ -65,20 +65,20 @@ export function Navbar({ currentPage, onNavigate }) {
 
                 {/* Desktop Navigation */}
                 <nav className={`hidden md:flex items-center gap-1 rounded-full px-1.5 py-1 ${isLight
-                        ? "" // No container background in light mode
-                        : "bg-slate-800/40 border border-white/5"
+                    ? "" // No container background in light mode
+                    : "bg-slate-800/40 border border-white/5"
                     }`}>
                     {navItems.map((item) => (
                         <button
                             key={item.id}
                             onClick={() => onNavigate(item.id)}
                             className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${isLight
-                                    ? currentPage === item.id
-                                        ? 'bg-slate-100 text-slate-900 font-semibold'
-                                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                                    : currentPage === item.id
-                                        ? 'bg-gradient-to-r from-blue-500/20 to-violet-500/20 text-white border border-white/10'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                ? currentPage === item.id
+                                    ? 'bg-slate-100 text-slate-900 font-semibold'
+                                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                                : currentPage === item.id
+                                    ? 'bg-gradient-to-r from-blue-500/20 to-violet-500/20 text-white border border-white/10'
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                                 }`}
                         >
                             <item.icon className="w-3.5 h-3.5" />
@@ -93,8 +93,8 @@ export function Navbar({ currentPage, onNavigate }) {
                     <button
                         onClick={toggleTheme}
                         className={`p-2.5 rounded-xl transition-all ${isLight
-                                ? "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-                                : "bg-slate-800/50 hover:bg-slate-700/50 text-slate-400 hover:text-white border border-white/10"
+                            ? "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                            : "bg-slate-800/50 hover:bg-slate-700/50 text-slate-400 hover:text-white border border-white/10"
                             }`}
                         title={isLight ? "Switch to Dark Mode" : "Switch to Light Mode"}
                     >
@@ -105,8 +105,8 @@ export function Navbar({ currentPage, onNavigate }) {
                     <Button
                         onClick={() => onNavigate('upload')}
                         className={`flex items-center gap-2 px-5 py-2.5 ${isLight
-                                ? "bg-slate-900 hover:bg-slate-800 text-white shadow-md shadow-slate-200"
-                                : "bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 shadow-lg shadow-violet-500/25"
+                            ? "bg-slate-900 hover:bg-slate-800 text-white shadow-md shadow-slate-200"
+                            : "bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 shadow-lg shadow-violet-500/25"
                             }`}
                     >
                         <Hammer className="w-4 h-4" />
@@ -120,8 +120,8 @@ export function Navbar({ currentPage, onNavigate }) {
                     <button
                         onClick={toggleTheme}
                         className={`p-2 rounded-xl transition-colors ${isLight
-                                ? "bg-slate-100 text-slate-600"
-                                : "bg-slate-800/50 text-slate-300 border border-white/10"
+                            ? "bg-slate-100 text-slate-600"
+                            : "bg-slate-800/50 text-slate-300 border border-white/10"
                             }`}
                     >
                         {isLight ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
@@ -129,8 +129,8 @@ export function Navbar({ currentPage, onNavigate }) {
 
                     <button
                         className={`p-2 rounded-xl transition-colors ${isLight
-                                ? "bg-slate-100 text-slate-900"
-                                : "bg-slate-800/50 border border-white/10 text-slate-300 hover:text-white"
+                            ? "bg-slate-100 text-slate-900"
+                            : "bg-slate-800/50 border border-white/10 text-slate-300 hover:text-white"
                             }`}
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     >
@@ -142,8 +142,8 @@ export function Navbar({ currentPage, onNavigate }) {
             {/* Mobile Menu */}
             {mobileMenuOpen && (
                 <div className={`md:hidden absolute top-full left-0 right-0 p-4 border-b ${isLight
-                        ? "bg-white border-slate-200 shadow-lg"
-                        : "bg-slate-950/98 backdrop-blur-xl border-white/10"
+                    ? "bg-white border-slate-200 shadow-lg"
+                    : "bg-slate-950/98 backdrop-blur-xl border-white/10"
                     }`}>
                     <div className="space-y-1">
                         {navItems.map((item) => (
@@ -151,12 +151,12 @@ export function Navbar({ currentPage, onNavigate }) {
                                 key={item.id}
                                 onClick={() => { onNavigate(item.id); setMobileMenuOpen(false); }}
                                 className={`flex items-center gap-3 w-full text-left p-3 rounded-xl text-sm font-medium transition-all ${isLight
-                                        ? currentPage === item.id
-                                            ? 'bg-slate-100 text-slate-900'
-                                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                                        : currentPage === item.id
-                                            ? 'bg-gradient-to-r from-blue-500/20 to-violet-500/20 text-white'
-                                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                    ? currentPage === item.id
+                                        ? 'bg-slate-100 text-slate-900'
+                                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                                    : currentPage === item.id
+                                        ? 'bg-gradient-to-r from-blue-500/20 to-violet-500/20 text-white'
+                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                                     }`}
                             >
                                 <item.icon className="w-4 h-4" />

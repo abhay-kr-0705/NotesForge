@@ -116,6 +116,13 @@ export function AdminDashboard({ onBack }) {
 
         } catch (error) {
             console.error("Error fetching stats:", error);
+            if (error.message.includes("requires an index")) {
+                alert("Missing Firestore Index. Check console for the creation link.");
+            } else if (error.code === 'permission-denied') {
+                alert("Access Denied: Check Firestore Security Rules.");
+            } else {
+                alert("Failed to load analytics: " + error.message);
+            }
         } finally {
             setLoading(false);
         }
